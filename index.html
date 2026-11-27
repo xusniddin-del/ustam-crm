@@ -126,6 +126,9 @@ input:focus,select:focus,textarea:focus{border-color:var(--b);box-shadow:0 0 0 3
 .legend{display:flex;gap:14px;font-size:12px;color:var(--m);font-weight:600;margin-top:8px}
 .legend i{display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--b);margin-right:5px;vertical-align:-1px}
 .legend i.x{background:#F3A6A6}
+.ctst{display:flex;gap:4px}.ctst div{flex:1;text-align:center;font-size:11px;font-weight:700;color:var(--m)}.ctst b{display:flex;margin:0 auto 4px;width:28px;height:28px;border-radius:50%;align-items:center;justify-content:center;background:#E9EEF7;color:var(--m);font-size:12px}.ctst .d b{background:var(--ok);color:#fff}.ctst .c b{background:var(--b);color:#fff}.ctst .c{color:var(--b)}
+.ctdoc{background:#fff;border:1px solid var(--line);border-radius:var(--r);overflow:hidden}.ctdoc iframe{width:100%;border:0;min-height:300px;display:block}
+.sigw{position:relative;height:170px;background:#fff;border:2px dashed #9DBBF5;border-radius:var(--r);overflow:hidden}.sigw canvas{width:100%;height:100%;touch-action:none;display:block}.sigph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#A9B4CC;font-weight:600;pointer-events:none}.sigimg{max-width:100%;max-height:100%;display:block;margin:auto;position:absolute;inset:0;object-fit:contain}
 .notice{background:var(--warnbg);color:var(--warn);border-radius:var(--r);padding:14px;font-weight:600;font-size:14px}
 .pv{border-radius:14px;overflow:hidden;border:1px solid var(--line);margin:12px auto 0;background:#fff}
 #poster-host{position:absolute;left:-12000px;top:0}
@@ -191,6 +194,8 @@ const P = {
   trash: '<path d="M4 7h16M10 11v6M14 11v6M5 7l1 13h12l1-13M9 7V4h6v3"/>',
   sc: '<circle cx="6" cy="7" r="3"/><circle cx="6" cy="17" r="3"/><path d="M8.6 8.6 20 18M8.6 15.4 20 6"/>',
   cash: '<rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/>',
+  doc: '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/>',
+  pen: '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',
   card: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h3"/>',
   debt: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
   scan: '<path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2M7 12h10"/>',
@@ -529,6 +534,7 @@ function renderBosh(m) {
   if (sec === 'mass') { m.innerHTML = secMass(); return; }
   if (sec === 'info') { m.innerHTML = secInfo(); return; }
   if (sec === 'buy') return secBuy(m);
+  if (sec === 'ct') return secCt(m);
   const left = Math.round((new Date(s.paidUntil + 'T00:00:00Z') - new Date(S.d.today + 'T00:00:00Z')) / 864e5);
   const item = (k, ic, t, sub, lock) => `<div class="it" data-a="sec" data-v="${k}"><div class="av">${I(ic, 20)}</div><div class="mid"><b>${t}${lock ? ` <span class="pill pro">${lock}</span>` : ''}</b><span>${sub}</span></div>${I('chev', 18, '#8A94AB')}</div>`;
   m.innerHTML = `
@@ -578,12 +584,9 @@ async function secBuy(m) {
   ${no('Ma’lumotlar Ustam CRM serverida saqlanadi', 'Ma’lumotlar sizniki — server faqat xavfsizlik va dastur 24/7 ishlashi uchun. Telefon yo‘qolsa ham hammasi joyida qoladi. Agar telefoningizda tursa, bron, eslatma va hisobot ishlashi uchun telefon kechayu kunduz yoqiq va internetda turishi kerak bo‘lardi.')}
   ${no('Yangilanishlar kelmaydi', 'Sotib olgan kuningizdagi versiya qoladi. Yangi imkoniyat kerak bo‘lsa — alohida buyurtma: 100 000 so‘mdan 500 000 so‘mgacha, ishga qarab.')}
   </div>
-  ${B.pending ? `<div class="notice" style="margin-top:14px">So‘rovingiz yuborilgan. Administrator siz bilan bog‘lanadi.</div>` : ''}
-  <p class="err" id="buy-err"></p>
-  ${S.d.pay ? `<button class="btn p w" style="margin-top:12px" data-a="payGo" data-k="umrbod">${I('card', 18)} ${som(B.prices[S.buyT])} — onlayn to‘lash</button>` : ''}
-  <button class="btn ${S.d.pay ? 'g' : 'p'} w" style="margin-top:${S.d.pay ? 8 : 12}px" data-a="buyReq">${I('crown', 18)} ${S.d.pay ? 'Naqd / boshqa usulda — so‘rov yuborish' : 'Sotib olish so‘rovini yuborish'}</button>
-  ${B.contact ? (B.contact.startsWith('@') ? `<button class="btn g w" style="margin-top:8px" data-a="contact">${I('send', 18)} ${esc(B.contact)} ga yozish</button>` : `<a class="btn g w" style="margin-top:8px" href="tel:${esc(B.contact)}">${I('phone', 18)} ${esc(B.contact)}</a>`) : ''}
-  <p class="hint" style="text-align:center">${S.d.pay ? 'Onlayn to‘lovdan keyin dastur darhol sizning nomingizga o‘tadi va botga xabar keladi.' : 'To‘lovdan keyin administrator dasturni sizning nomingizga o‘tkazadi va botga xabar keladi.'}</p>`;
+  ${ctBlock()}
+  ${B.contact ? (B.contact.startsWith('@') ? `<button class="btn g w" style="margin-top:8px" data-a="contact">${I('send', 18)} Savol bo‘lsa: ${esc(B.contact)}</button>` : `<a class="btn g w" style="margin-top:8px" href="tel:${esc(B.contact)}">${I('phone', 18)} ${esc(B.contact)}</a>`) : ''}`;
+  if (!S.ct) { try { S.ct = await api('p_ct_get', { tariff: S.buyT }, true); if (S.sec === 'buy') secBuy(m); } catch (e) { } }
 }
 async function buyReq(el) {
   if (!(await confirmBox(`${S.buy.tariffs[S.buyT].name} — ${som(S.buy.prices[S.buyT])}. So‘rov yuborilsinmi?`))) return;
@@ -641,7 +644,7 @@ async function payCheck(el, quiet) {
   try {
     const r = await api('p_check', { id: S.bill.id }, true);
     if (r.paid) {
-      clearInterval(S.payTimer); S.bill = null; S.buy = null;
+      clearInterval(S.payTimer); S.bill = null; S.buy = null; S.ct = null;
       haptic('success'); closeSheet();
       S.d = await api('me', {}, true); S.sec = null; render();
       toast('✅ To‘lov qabul qilindi. Rahmat!');
@@ -650,6 +653,158 @@ async function payCheck(el, quiet) {
   payCheck.busy = false;
 }
 document.addEventListener('visibilitychange', () => { if (!document.hidden && S.bill) payCheck(null, true); });
+
+/* --- Shartnoma: imzolash, yuborish, to'lov --- */
+const CTS = { imzolandi: ['Imzolandi', ''], yuborildi: ['To‘lov kutilmoqda', 'warn'], tolandi: ['Admin tasdig‘i kutilmoqda', 'warn'], tasdiqlandi: ['Kuchga kirdi', 'ok'], rad: ['Rad etildi', 'bad'] };
+function ctSteps(c) {
+  const st = c ? c.status : '', i = { imzolandi: 1, yuborildi: 2, tolandi: 3, tasdiqlandi: 4 }[st] || 0;
+  const L = ['Imzolash', 'Yuborish', 'To‘lov', 'Tasdiq'];
+  return `<div class="ctst">${L.map((l, k) => `<div class="${k < i ? 'd' : k === i ? 'c' : ''}"><b>${k < i ? I('check', 14) : k + 1}</b><span>${l}</span></div>`).join('')}</div>`;
+}
+function ctBlock() {
+  const C = S.ct && S.ct.c, B = S.buy;
+  if (!S.ct) return `<h2>Shartnoma</h2>${loader()}`;
+  const diff = C && C.tariff !== S.buyT && ['imzolandi', 'yuborildi'].indexOf(C.status) > -1;
+  let act = '';
+  if (!C) act = `<button class="btn p w" data-a="ctOpen">${I('doc', 18)} Shartnomani o‘qish va imzolash</button>`;
+  else if (diff) act = `<div class="notice" style="margin-bottom:10px">Shartnoma ${esc(S.d.tariffs[C.tariff].name)} tarifiga imzolangan. ${esc(S.d.tariffs[S.buyT].name)} uchun qayta imzolang.</div><button class="btn p w" data-a="ctOpen">${I('pen', 18)} Qayta imzolash</button>`;
+  else if (C.status === 'imzolandi') act = `<button class="btn p w" data-a="ctSend">${I('send', 18)} Yuborish</button><button class="btn g w" style="margin-top:8px" data-a="ctOpen">${I('doc', 18)} Shartnomani ko‘rish</button>`;
+  else if (C.status === 'yuborildi') act = (S.d.pay ? `<button class="btn p w" data-a="payGo" data-k="umrbod">${I('card', 18)} ${som(C.price)} — to‘lov qilish</button>` : '') +
+    (C.pay === 'naqd' ? `<div class="notice" style="margin-top:8px">Naqd to‘lov tanlangan. Administrator pulni olgach tasdiqlaydi.</div>` : `<button class="btn g w" style="margin-top:8px" data-a="ctCash">${I('cash', 18)} Naqd to‘layman</button>`) +
+    `<button class="btn g w" style="margin-top:8px" data-a="ctOpen">${I('doc', 18)} Shartnomani ko‘rish</button><button class="btn s g" style="margin:10px auto 0;display:block" data-a="ctCancel">Arizani bekor qilish</button>`;
+  else if (C.status === 'tolandi') act = `<div class="notice">To‘lov qabul qilindi. Administrator 3 ish kuni ichida tasdiqlaydi — imzolangan shartnoma botga keladi.</div><button class="btn g w" style="margin-top:8px" data-a="ctOpen">${I('doc', 18)} Shartnomani ko‘rish</button>`;
+  return `<h2>Shartnoma ${C ? `<small>№ ${esc(C.no)}</small>` : ''}</h2>
+  <div class="card">${ctSteps(C)}${C ? `<div style="display:flex;justify-content:space-between;align-items:center;margin:12px 0"><span class="pill ${CTS[C.status][1]}">${CTS[C.status][0]}</span><b>${esc(S.d.tariffs[C.tariff].name)} · ${som(C.price)}</b></div>` : '<p class="hint" style="margin:10px 0 12px">Avval shartnomani o‘qib imzolaysiz, keyin yuborib to‘lov qilasiz. Administrator tasdiqlagach dastur sizniki bo‘ladi.</p>'}${act}</div>
+  <p class="err" id="buy-err"></p>`;
+}
+async function secCt(m) {
+  const back = `<button class="btn g s" data-a="ctBack" style="margin-bottom:12px">← Orqaga</button>`;
+  m.innerHTML = back + loader();
+  let r; try { r = await api('p_ct_get', { tariff: S.buyT }, true); S.ct = r; } catch (e) { return fail(e); }
+  const C = r.c, canSign = !C || ['imzolandi', 'yuborildi'].indexOf(C.status) > -1;
+  m.innerHTML = back + `<h3>Litsenziya shartnomasi</h3>
+  <div class="ctdoc"><iframe id="ct-frame" title="Shartnoma matni" sandbox="allow-same-origin"></iframe></div>
+  ${canSign ? `<label for="ct-fish">Familiya, ism, otangizning ismi</label><input id="ct-fish" value="${esc((C && C.fish) || S.d.staff.name || '')}" placeholder="Aliyev Alisher Akmalovich" autocomplete="name">
+  <div class="lbl">Imzoyingiz <span style="font-weight:600">— barmog‘ingiz bilan chizing</span></div>
+  <div class="sigw"><canvas id="sig" aria-label="Imzo maydoni"></canvas><span class="sigph" id="sigph">Shu yerga imzo qo‘ying</span></div>
+  <div style="display:flex;gap:8px;margin-top:8px"><button class="btn g s" data-a="sigClear">Tozalash</button><span class="hint" style="margin:0;align-self:center">Imzo qo‘yib «Tasdiqlash»ni bosish shartnomaga rozilikni bildiradi.</span></div>
+  <p class="err" id="ct-err"></p>
+  <button class="btn p w" style="margin-top:10px" data-a="ctSign">${I('check', 18)} Tasdiqlash</button>` : ''}`;
+  const f = $('#ct-frame'); f.srcdoc = r.html;
+  f.onload = () => { try { f.style.height = (f.contentDocument.documentElement.scrollHeight + 4) + 'px'; } catch (e) { } };
+  if (canSign) sigPad($('#sig'));
+}
+function sigPad(cv) {
+  const r = window.devicePixelRatio || 1, w = cv.clientWidth, h = cv.clientHeight;
+  cv.width = w * r; cv.height = h * r;
+  const x = cv.getContext('2d'); x.scale(r, r); x.lineWidth = 2.6; x.lineCap = x.lineJoin = 'round'; x.strokeStyle = '#0B1B3F';
+  let on = false, lp = null; S.sigN = 0;
+  const pt = e => { const b = cv.getBoundingClientRect(); return [e.clientX - b.left, e.clientY - b.top]; };
+  cv.onpointerdown = e => { on = true; lp = pt(e); cv.setPointerCapture(e.pointerId); $('#sigph').style.display = 'none'; try { tg.disableVerticalSwipes(); } catch (z) { } };
+  cv.onpointermove = e => { if (!on) return; const p = pt(e); x.beginPath(); x.moveTo(lp[0], lp[1]); x.lineTo(p[0], p[1]); x.stroke(); S.sigN += Math.hypot(p[0] - lp[0], p[1] - lp[1]); lp = p; };
+  cv.onpointerup = cv.onpointercancel = () => { on = false; };
+}
+function sigData(cv) {
+  // bo'sh joylarni qirqib, shaffof PNG qaytaradi
+  const x = cv.getContext('2d'), d = x.getImageData(0, 0, cv.width, cv.height).data;
+  let a = cv.width, b = cv.height, c = 0, e = 0;
+  for (let y = 0; y < cv.height; y += 2) for (let i = 0; i < cv.width; i += 2) if (d[(y * cv.width + i) * 4 + 3] > 0) { if (i < a) a = i; if (i > c) c = i; if (y < b) b = y; if (y > e) e = y; }
+  if (c <= a) return '';
+  const p = 10, o = document.createElement('canvas'); o.width = c - a + 2 * p; o.height = e - b + 2 * p;
+  o.getContext('2d').drawImage(cv, a - p, b - p, o.width, o.height, 0, 0, o.width, o.height);
+  return o.toDataURL('image/png');
+}
+async function ctSign(el) {
+  const fish = val('ct-fish').trim();
+  if (fish.split(/\s+/).length < 2) return fail({ msg: 'Familiya va ismingizni to‘liq yozing' }, 'ct-err');
+  if ((S.sigN || 0) < 40) return fail({ msg: 'Imzo qo‘ying' }, 'ct-err');
+  el.disabled = true;
+  try { S.ct = await api('p_ct_sign', { tariff: S.buyT, fish, sig: sigData($('#sig')) }); haptic('success'); toast('Imzolandi. Endi «Yuborish»ni bosing'); S.sec = 'buy'; renderTab(); window.scrollTo(0, 0); }
+  catch (e) { el.disabled = false; fail(e, 'ct-err'); }
+}
+async function ctDo(action, msg, el) {
+  if (el) el.disabled = true;
+  try { S.ct = await api(action, {}); haptic('success'); if (msg) toast(msg); renderTab(); }
+  catch (e) { if (el) el.disabled = false; fail(e, 'buy-err'); }
+}
+
+/* --- Admin: shartnomalar --- */
+function aCt() {
+  const L = S.act, R = L.rekv || {}, pend = L.list.filter(c => ['tolandi', 'yuborildi'].indexOf(c.status) > -1);
+  const row = c => `<div class="it" data-a="aCtOpen" data-no="${esc(c.no)}"><div class="av" style="background:var(--${c.status === 'tasdiqlandi' ? 'okbg);color:var(--ok' : c.status === 'rad' ? 'badbg);color:var(--bad' : 'warnbg);color:var(--warn'})">${I('doc', 18)}</div>
+  <div class="mid"><b>${esc(c.shop)} · ${esc(S.d.tariffs[c.tariff].name)}</b><span>№ ${esc(c.no)} · ${esc(c.fish)}</span><span style="margin-top:3px"><span class="pill ${CTS[c.status][1]}">${CTS[c.status][0]}</span>${c.pay ? ' <span class="pill gray">' + esc(c.pay) + '</span>' : ''}</span></div><div class="end"><b>${fmt(c.price)}</b></div></div>`;
+  return `${!L.rekvOk ? `<div class="notice" style="margin-bottom:12px">Shartnomalarni tasdiqlash uchun pastda rekvizitlar va imzoni to‘ldiring.</div>` : ''}
+  <h3>Kutilayotganlar <small style="color:var(--m)">${pend.length} ta</small></h3>
+  ${pend.length ? `<div class="list menu">${pend.map(row).join('')}</div>` : '<div class="empty">Yangi ariza yo‘q</div>'}
+  <h2>Barcha shartnomalar</h2>
+  ${L.list.length ? `<div class="list menu">${L.list.filter(c => pend.indexOf(c) < 0).map(row).join('') || '<div class="empty">Yo‘q</div>'}</div>` : '<div class="empty">Hali shartnoma yo‘q</div>'}
+  <h2>Rekvizitlar va imzo ${L.super ? '' : '<small>faqat asosiy admin o‘zgartiradi</small>'}</h2>
+  <div class="card">
+  ${[['name', 'YaTT to‘liq nomi', 'YaTT Sharofiddinov Xusniddin ...'], ['brand', 'Brend nomi', 'Vector Studio'], ['stir', 'STIR', '123456789'], ['guv', 'Guvohnoma raqami va sanasi', '№ 123456, 01.01.2025'], ['addr', 'Manzil', 'Marg‘ilon sh., ...'], ['hr', 'Hisob raqam', '2020 8000 ...'], ['bank', 'Bank', 'Xalq banki Marg‘ilon filiali'], ['mfo', 'MFO', '00000'], ['phone', 'Telefon', '+998 90 832 44 36'], ['head', 'Imzo ostidagi yozuv', 'X. Sharofiddinov']].map(f => `<label for="rk-${f[0]}">${f[1]}</label><input id="rk-${f[0]}" value="${esc(R[f[0]] || '')}" placeholder="${esc(f[2])}" ${L.super ? '' : 'disabled'}>`).join('')}
+  <div class="lbl">Imzo</div>
+  <div class="sigw" style="height:130px">${L.sig && !S.rkSigNew ? `<img src="${L.sig}" alt="Imzo" class="sigimg">` : `<canvas id="sig"></canvas><span class="sigph" id="sigph">Chizing yoki rasm yuklang</span>`}</div>
+  ${L.super ? `<div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap"><button class="btn g s" data-a="rkSigNew">${I('pen', 16)} Qayta chizish</button><label class="btn g s" style="margin:0;cursor:pointer">${I('plus', 16)} Imzo rasmini yuklash<input type="file" accept="image/*" id="rk-sigf" hidden></label></div>` : ''}
+  <div class="lbl">Pechat</div>
+  <div class="sigw" style="height:130px">${S.rkStamp || L.stamp ? `<img src="${S.rkStamp || L.stamp}" alt="Pechat" class="sigimg">` : '<span class="sigph">Pechat yuklanmagan</span>'}</div>
+  ${L.super ? `<label class="btn g s" style="margin:8px 0 0;cursor:pointer;display:inline-flex">${I('plus', 16)} Pechat rasmini yuklash<input type="file" accept="image/*" id="rk-stampf" hidden></label>
+  <p class="hint">Oq qog‘ozdagi imzo/pechat suratini yuklang — oq fon avtomatik olib tashlanadi.</p>
+  <p class="err" id="rk-err"></p><button class="btn p w" data-a="rkSave">${I('check', 18)} Saqlash</button>` : ''}</div>`;
+}
+async function renderCt(m) {
+  if (!S.act) { m.innerHTML = loader(); try { S.act = await api('a_ct_list', {}, true); } catch (e) { return fail(e); } }
+  m.innerHTML = aCt();
+  if ($('#sig')) sigPad($('#sig'));
+  const up = (id, key) => { const i = $('#' + id); if (i) i.onchange = () => i.files[0] && whiteToAlpha(i.files[0]).then(u => { S[key] = u; if (key === 'rkSig') { S.rkSigNew = false; S.act.sig = u; } renderCt(m); }).catch(() => toast('Rasm o‘qilmadi', true)); };
+  up('rk-sigf', 'rkSig'); up('rk-stampf', 'rkStamp');
+}
+function whiteToAlpha(file) {
+  return new Promise((res, rej) => {
+    const im = new Image(); im.onload = () => {
+      const k = Math.min(1, 900 / Math.max(im.width, im.height)), c = document.createElement('canvas');
+      c.width = Math.round(im.width * k); c.height = Math.round(im.height * k);
+      const x = c.getContext('2d'); x.drawImage(im, 0, 0, c.width, c.height);
+      const D = x.getImageData(0, 0, c.width, c.height), d = D.data;
+      for (let i = 0; i < d.length; i += 4) { const l = (d[i] + d[i + 1] + d[i + 2]) / 3; if (l > 200) d[i + 3] = 0; else if (l > 150) d[i + 3] = Math.round((200 - l) * 5.1); }
+      x.putImageData(D, 0, 0); res(c.toDataURL('image/png')); URL.revokeObjectURL(im.src);
+    };
+    im.onerror = rej; im.src = URL.createObjectURL(file);
+  });
+}
+async function rkSave(el) {
+  const rekv = {}; ['name', 'brand', 'stir', 'guv', 'addr', 'hr', 'bank', 'mfo', 'phone', 'head'].forEach(k => rekv[k] = val('rk-' + k));
+  if (!rekv.name || !rekv.stir) return fail({ msg: 'YaTT nomi va STIR majburiy' }, 'rk-err');
+  const body = { rekv };
+  if ($('#sig') && (S.sigN || 0) > 40) body.sig = sigData($('#sig'));
+  else if (S.rkSig) body.sig = S.rkSig;
+  if (S.rkStamp) body.stamp = S.rkStamp;
+  if (!body.sig && !S.act.sig) return fail({ msg: 'Imzo qo‘ying yoki rasmini yuklang' }, 'rk-err');
+  el.disabled = true;
+  try { S.act = await api('a_rekv_save', body); S.rkSig = S.rkStamp = null; S.rkSigNew = false; haptic('success'); toast('Saqlandi'); renderATab(); }
+  catch (e) { el.disabled = false; fail(e, 'rk-err'); }
+}
+async function aCtOpen(el) {
+  const c = S.act.list.find(x => x.no === el.dataset.no); if (!c) return;
+  openSheet(`<h3>Shartnoma № ${esc(c.no)}</h3><div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px"><span class="pill ${CTS[c.status][1]}">${CTS[c.status][0]}</span><span class="pill gray">${esc(S.d.tariffs[c.tariff].name)} · ${som(c.price)}</span>${c.pay ? `<span class="pill gray">${esc(c.pay)}</span>` : ''}</div>
+  <div class="ctdoc" style="max-height:52vh;overflow:auto">${loader()}</div>
+  ${c.reason ? `<p class="hint">Sabab: ${esc(c.reason)}</p>` : ''}
+  <p class="err" id="act-err"></p>
+  ${c.status === 'tolandi' ? `<button class="btn p w" data-a="aCtOk" data-no="${esc(c.no)}">${I('check', 18)} Tasdiqlash va imzolash</button>` : ''}
+  ${c.status === 'yuborildi' ? `<button class="btn p w" data-a="aCtOk" data-no="${esc(c.no)}" data-cash="1">${I('cash', 18)} Naqd pul olindi — tasdiqlash</button>` : ''}
+  ${['imzolandi', 'yuborildi', 'tolandi'].indexOf(c.status) > -1 ? `<button class="btn g w" style="margin-top:8px" data-a="aCtNo" data-no="${esc(c.no)}">Rad etish</button>` : ''}
+  ${c.status === 'tasdiqlandi' ? `<button class="btn g w" data-a="aCtPdf" data-no="${esc(c.no)}">${I('send', 18)} PDF’ni menga yuborish</button>` : ''}`);
+  try { const r = await api('a_ct_view', { no: c.no }, true); const box = $('#sheet .ctdoc'); if (box) { box.innerHTML = '<iframe sandbox="allow-same-origin" title="Shartnoma"></iframe>'; const f = box.firstChild; f.srcdoc = r.html; f.onload = () => { try { f.style.height = (f.contentDocument.documentElement.scrollHeight + 4) + 'px'; } catch (e) { } }; } } catch (e) { fail(e, 'act-err'); }
+}
+async function aCtOk(el) {
+  if (!(await confirmBox(el.dataset.cash ? 'Naqd pul olinganini tasdiqlaysizmi? Dastur ustaning nomiga o‘tadi.' : 'Shartnoma tasdiqlansinmi? Imzo va pechatingiz qo‘yiladi, dastur ustaning nomiga o‘tadi.'))) return;
+  el.disabled = true;
+  try { S.act = await api('a_ct_ok', { no: el.dataset.no, cash: !!el.dataset.cash }); S.A = null; closeSheet(); haptic('success'); toast('Tasdiqlandi — PDF ustaga yuborildi'); renderATab(); }
+  catch (e) { el.disabled = false; fail(e, 'act-err'); }
+}
+async function aCtNo(el) {
+  const reason = prompt('Rad etish sababi:') || '';
+  if (!reason.trim()) return;
+  try { S.act = await api('a_ct_no', { no: el.dataset.no, reason }); closeSheet(); toast('Rad etildi'); renderATab(); } catch (e) { fail(e, 'act-err'); }
+}
 function tariffsSheet() {
   const T = S.d.tariffs, cur = S.d.shop.tariff, c = S.d.contact || '';
   const feat = k => k === 'start' ? ['1–2 usta', 'Kassa, mijozlar, bron', 'QR poster'] : k === 'standart' ? ['4 tagacha usta', 'SMS xizmati (o‘z telefoningiz SIM’idan)', 'Ommaviy SMS'] : ['8 tagacha usta', 'SMS xizmati', 'Rahbar paneli: har usta bo‘yicha hisobot, barcha bronlar'];
@@ -960,7 +1115,7 @@ async function cCancel(el) {
 
 /* ================= PLATFORMA ADMIN ================= */
 function renderAdmin() {
-  const tabs = [['stat', 'Statistika', 'chart'], ['shops', 'Ro‘yxat', 'shop'], ['msg', 'Xabar', 'mega'], ['set', 'Sozlama', 'shield']];
+  const tabs = [['stat', 'Statistika', 'chart'], ['shops', 'Ro‘yxat', 'shop'], ['ct', 'Shartnoma', 'doc'], ['msg', 'Xabar', 'mega'], ['set', 'Sozlama', 'shield']];
   $('#app').innerHTML = `<div class="top"><div class="brand"><div class="logo adm">${I('shield', 22)}</div><div><b>Ustam CRM · Admin</b><span>${S.d.super ? 'Asosiy admin' : 'Admin'}</span></div></div>
   ${modesBar() || `<button class="ic" data-a="aRefresh" aria-label="Yangilash">${I('refresh')}</button>`}</div>
   <main id="main"></main>
@@ -973,6 +1128,7 @@ async function renderATab() {
   const t = S.aTab;
   if (t === 'stat') m.innerHTML = aStat();
   if (t === 'shops') { m.innerHTML = aShops(); drawShops(); }
+  if (t === 'ct') return renderCt(m);
   if (t === 'msg') { if (!S.hist) { m.innerHTML = loader(); try { S.hist = await api('a_history', {}, true); } catch (e) { return fail(e); } } m.innerHTML = aMsg(); }
   if (t === 'set') {
     if (!S.admins) { m.innerHTML = loader(); try { S.admins = await api('a_admins', {}, true); S.admins.sms = await api('a_sms_get', {}, true); if (!S.hist) S.hist = await api('a_history', {}, true); } catch (e) { return fail(e); } }
@@ -1125,7 +1281,7 @@ const A = {
   closeSheet,
   contact: () => { try { tg.openTelegramLink('https://t.me/' + S.d.contact.replace('@', '')); } catch (e) { } },
   mode: el => { S.mode = el.dataset.v; closeSheet(); render(); window.scrollTo(0, 0); },
-  refresh: async () => { try { S.d = await api('me'); S.clients = S.bookings = S.report = S.team = S.sms = S.buy = null; render(); toast('Yangilandi'); } catch (e) { fail(e); } },
+  refresh: async () => { try { S.d = await api('me'); S.clients = S.bookings = S.report = S.team = S.sms = S.buy = S.ct = null; render(); toast('Yangilandi'); } catch (e) { fail(e); } },
   tab: el => { S.tab = el.dataset.t; S.sec = null; renderStaff(); window.scrollTo(0, 0); },
   mf: async el => { S.mf = el.dataset.v; S.report = null; if (S.tab === 'bugun') S.dashStale = true; renderTab(); },
   visitForm: () => visitForm(), visitSave, expForm, expSave,
@@ -1144,6 +1300,15 @@ const A = {
   secBack: () => { S.sec = null; renderTab(); },
   tariffs: tariffsSheet,
   paySheet, payGo, payCheck,
+  ctOpen: () => { S.sec = 'ct'; renderTab(); window.scrollTo(0, 0); },
+  ctBack: () => { S.sec = 'buy'; renderTab(); },
+  ctSign, sigClear: () => { const c = $('#sig'); if (c) { c.getContext('2d').clearRect(0, 0, c.width, c.height); S.sigN = 0; $('#sigph').style.display = ''; } },
+  ctSend: el => ctDo('p_ct_send', 'Yuborildi. Endi to‘lov qiling', el),
+  ctCash: el => ctDo('p_ct_cash', 'Administratorga xabar berildi', el),
+  ctCancel: async el => { if (await confirmBox('Ariza bekor qilinsinmi?')) ctDo('p_ct_cancel', 'Bekor qilindi', el); },
+  aCtOpen, aCtOk, aCtNo, rkSave,
+  rkSigNew: () => { S.rkSigNew = true; S.rkSig = null; renderCt($('#main')); },
+  aCtPdf: async el => { el.disabled = true; try { await api('a_ct_pdf', { no: el.dataset.no }); toast('PDF botga yuborildi'); } catch (e) { fail(e, 'act-err'); } el.disabled = false; },
   payT: el => { S.pay.t = el.dataset.v; drawPay(); },
   payM: el => { S.pay.m = Number(el.dataset.v); drawPay(); },
   payOpen: () => { if (S.bill) { try { tg.openLink(S.bill.url); } catch (e) { window.open(S.bill.url, '_blank'); } } },
@@ -1172,7 +1337,7 @@ const A = {
   cPick: el => { S.pick = el.dataset.v; drawSlots(); drawBar(); try { tg.HapticFeedback.selectionChanged(); } catch (e) { } },
   cBook, cCancel,
   aTab: el => { S.aTab = el.dataset.t; renderAdmin(); window.scrollTo(0, 0); },
-  aRefresh: async () => { S.A = S.hist = S.admins = null; renderATab(); },
+  aRefresh: async () => { S.A = S.hist = S.admins = S.act = null; renderATab(); },
   aF: el => { S.aF = el.dataset.v; document.querySelectorAll('[data-a=aF]').forEach(b => b.classList.toggle('on', b === el)); drawShops(); },
   aShop, aExtend, aBlock, aMsgOne, aSend, aAdmInv,
   aAdmRm: async el => { if (!(await confirmBox('Admin o‘chirilsinmi?'))) return; try { const r = await api('a_admin_remove', { tgId: el.dataset.id }); S.admins.admins = r.admins; renderATab(); } catch (e) { fail(e); } },
