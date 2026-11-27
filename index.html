@@ -286,7 +286,7 @@ function renderExpired() {
   const link = isOwner() ? (c.startsWith('@') ? `<button class="btn p" style="flex:none;width:240px" data-a="contact">${I('send', 18)} ${esc(c)} ga yozish</button>` : (c ? `<a class="btn p" style="flex:none;width:240px" href="tel:${esc(c)}">${I('phone', 18)} ${esc(c)}</a>` : '')) : '';
   $('#app').innerHTML = `<div class="top"><div class="brand"><div class="logo">${MASCOT(36)}</div><div><b>${esc(d.shop.shop)}</b><span>${esc(d.staff.name)}</span></div></div>${modesBar()}</div>
   <div class="center" style="min-height:70vh"><div class="big">${I('lock', 34)}</div><h3>${d.blocked ? 'Hisob vaqtincha to‘xtatilgan' : 'Obuna muddati tugagan'}</h3>
-  <p>${isOwner() ? `<b>${esc(d.shop.tariffName)}</b> tarifi · oyiga <b>${som(d.shop.tariffPrice)}</b>.<br>Ma’lumotlaringiz saqlanib turibdi. To‘lovdan keyin hammasi qayta ochiladi.` : 'Sartaroshxona egasi obunani yangilashi kerak. Ma’lumotlaringiz saqlanib turibdi.'}</p>${link}</div>`;
+  <p>${isOwner() ? `<b>${esc(d.shop.tariffName)}</b> tarifi · oyiga <b>${som(d.shop.tariffPrice)}</b>.<br>Ma’lumotlaringiz saqlanib turibdi. To‘lovdan keyin hammasi qayta ochiladi.` : 'Sartaroshxona egasi obunani yangilashi kerak. Ma’lumotlaringiz saqlanib turibdi.'}</p>${isOwner() && d.pay && !d.blocked ? `<button class="btn p" style="flex:none;width:240px;margin-bottom:8px" data-a="paySheet">${I('card', 18)} Onlayn to‘lash</button>` : ''}${link.replace('btn p', d.pay ? 'btn g' : 'btn p')}</div>`;
 }
 
 function renderStaff() {
@@ -536,7 +536,8 @@ function renderBosh(m) {
   <div class="hero-v" style="font-size:24px">${s.tariffName} imkoniyatlari</div>` : `<section class="hero"><div class="hero-l">Tarif · ${fd(s.paidUntil)} gacha · ${left > 0 ? left + ' kun qoldi' : 'bugun tugaydi'}</div>
   <div class="hero-v" style="font-size:24px">${s.tariffName} — ${som(s.tariffPrice)}<span style="font-size:13px;color:#A9C2F5"> /oy</span></div>`}
   <div class="hero-row"><div><span>Ustalar</span><b>${(s.masters || []).length} / ${s.max}</b></div><div><span>SMS</span><b>${s.sms ? 'Bor' : 'Yo‘q'}</b></div><div><span>Rahbar paneli</span><b>${s.panel ? 'Bor' : 'Yo‘q'}</b></div></div></section>
-  ${!s.sold && s.tariff !== 'biznes' ? `<button class="btn g w" style="margin-top:12px" data-a="tariffs">${I('crown', 18)} Tarifni oshirish</button>` : ''}
+  ${!s.sold && S.d.pay ? `<button class="btn p w" style="margin-top:12px" data-a="paySheet">${I('card', 18)} Obunani onlayn to‘lash</button>` : ''}
+  ${!s.sold && s.tariff !== 'biznes' ? `<button class="btn g w" style="margin-top:${S.d.pay ? 8 : 12}px" data-a="tariffs">${I('crown', 18)} Tarifni oshirish</button>` : ''}
   <h2>Boshqaruv</h2>
   <div class="list menu">
   ${item('jamoa', 'users', 'Jamoa', 'Ustalarni qo‘shish va chiqarish')}
@@ -579,9 +580,10 @@ async function secBuy(m) {
   </div>
   ${B.pending ? `<div class="notice" style="margin-top:14px">So‘rovingiz yuborilgan. Administrator siz bilan bog‘lanadi.</div>` : ''}
   <p class="err" id="buy-err"></p>
-  <button class="btn p w" style="margin-top:12px" data-a="buyReq">${I('crown', 18)} Sotib olish so‘rovini yuborish</button>
+  ${S.d.pay ? `<button class="btn p w" style="margin-top:12px" data-a="payGo" data-k="umrbod">${I('card', 18)} ${som(B.prices[S.buyT])} — onlayn to‘lash</button>` : ''}
+  <button class="btn ${S.d.pay ? 'g' : 'p'} w" style="margin-top:${S.d.pay ? 8 : 12}px" data-a="buyReq">${I('crown', 18)} ${S.d.pay ? 'Naqd / boshqa usulda — so‘rov yuborish' : 'Sotib olish so‘rovini yuborish'}</button>
   ${B.contact ? (B.contact.startsWith('@') ? `<button class="btn g w" style="margin-top:8px" data-a="contact">${I('send', 18)} ${esc(B.contact)} ga yozish</button>` : `<a class="btn g w" style="margin-top:8px" href="tel:${esc(B.contact)}">${I('phone', 18)} ${esc(B.contact)}</a>`) : ''}
-  <p class="hint" style="text-align:center">To‘lovdan keyin administrator dasturni sizning nomingizga o‘tkazadi va botga xabar keladi.</p>`;
+  <p class="hint" style="text-align:center">${S.d.pay ? 'Onlayn to‘lovdan keyin dastur darhol sizning nomingizga o‘tadi va botga xabar keladi.' : 'To‘lovdan keyin administrator dasturni sizning nomingizga o‘tkazadi va botga xabar keladi.'}</p>`;
 }
 async function buyReq(el) {
   if (!(await confirmBox(`${S.buy.tariffs[S.buyT].name} — ${som(S.buy.prices[S.buyT])}. So‘rov yuborilsinmi?`))) return;
@@ -589,14 +591,73 @@ async function buyReq(el) {
   try { await api('o_buy_request', { tariff: S.buyT }); S.buy = null; haptic('success'); toast('So‘rov yuborildi — administrator bog‘lanadi'); renderTab(); }
   catch (e) { el.disabled = false; fail(e, 'buy-err'); }
 }
+
+/* --- Onlayn to'lov (TezCheck: Click, Payme, Uzum) --- */
+function paySheet(el) {
+  const d = S.d, T = d.tariffs, sh = d.shop;
+  S.pay = { kind: 'oy', t: (el && el.dataset.t) || S.pay && S.pay.t || sh.tariff || 'start', m: (S.pay && S.pay.m) || 1 };
+  drawPay();
+}
+function drawPay() {
+  const d = S.d, T = d.tariffs, P = S.pay, n = (d.shop.masters || []).length;
+  const ok = k => n <= T[k].max;
+  const total = T[P.t].price * P.m;
+  openSheet(`<h3>${I('card', 20)} Onlayn to‘lash</h3>
+  <p class="hint" style="margin:-4px 0 12px">Click, Payme, Uzum yoki karta orqali. To‘lov o‘tishi bilan obuna avtomatik uzayadi.</p>
+  <div class="lbl" style="margin-top:0">Tarif</div>
+  <div class="seg">${Object.keys(T).map(k => `<button class="${P.t === k ? 'on' : ''}" data-a="payT" data-v="${k}" ${ok(k) ? '' : 'disabled style="opacity:.4"'}>${T[k].name}</button>`).join('')}</div>
+  <div class="lbl">Muddat</div>
+  <div class="seg">${(d.payMonths || [1, 3, 6, 12]).map(m => `<button class="${P.m === m ? 'on' : ''}" data-a="payM" data-v="${m}">${m} oy</button>`).join('')}</div>
+  <section class="hero" style="margin-top:14px"><div class="hero-l">${T[P.t].name} · ${P.m} oy · ${som(T[P.t].price)}/oy</div>
+  <div class="hero-v">${som(total)}</div>
+  <div class="hero-row"><div><span>Hozirgi muddat</span><b>${d.expired ? 'Tugagan' : fd(d.shop.paidUntil)}</b></div><div><span>Qo‘shiladi</span><b>+${P.m * 30} kun</b></div></div></section>
+  <p class="err" id="pay-err"></p>
+  <button class="btn p w" style="margin-top:12px" data-a="payGo" data-k="oy">${I('card', 18)} ${som(total)} — to‘lovga o‘tish</button>`);
+}
+async function payGo(el) {
+  const kind = el.dataset.k === 'umrbod' ? 'umrbod' : 'oy';
+  const body = kind === 'umrbod' ? { kind, tariff: S.buyT } : { kind, tariff: S.pay.t, months: S.pay.m };
+  el.disabled = true;
+  try {
+    const r = await api('p_create', body);
+    S.bill = { id: r.id, url: r.url, amount: r.amount, t0: Date.now() };
+    try { tg.openLink(r.url); } catch (e) { window.open(r.url, '_blank'); }
+    payWait();
+  } catch (e) { el.disabled = false; fail(e, kind === 'oy' ? 'pay-err' : 'buy-err'); }
+}
+function payWait() {
+  const B = S.bill;
+  openSheet(`<div class="center" style="min-height:auto;padding:10px 0 4px"><div class="big">${I('card', 34)}</div>
+  <h3>To‘lov kutilmoqda</h3><p>${som(B.amount)}. To‘lov sahifasida to‘lovni yakunlang — keyin shu yerga qayting. Tasdiq o‘zi keladi.</p></div>
+  <div style="display:flex;justify-content:center;padding:6px 0 12px"><div class="spin"></div></div>
+  <button class="btn p w" data-a="payCheck">${I('refresh', 18)} To‘lovni tekshirish</button>
+  <button class="btn g w" style="margin-top:8px" data-a="payOpen">To‘lov sahifasini qayta ochish</button>`);
+  clearInterval(S.payTimer);
+  S.payTimer = setInterval(() => { if (!S.bill || Date.now() - S.bill.t0 > 15 * 60e3) return clearInterval(S.payTimer); payCheck(null, true); }, 6000);
+}
+async function payCheck(el, quiet) {
+  if (!S.bill || payCheck.busy) return;
+  payCheck.busy = true;
+  try {
+    const r = await api('p_check', { id: S.bill.id }, true);
+    if (r.paid) {
+      clearInterval(S.payTimer); S.bill = null; S.buy = null;
+      haptic('success'); closeSheet();
+      S.d = await api('me', {}, true); S.sec = null; render();
+      toast('✅ To‘lov qabul qilindi. Rahmat!');
+    } else if (!quiet) toast(['expired', 'revoked', 'eskirgan'].indexOf(r.state) > -1 ? 'To‘lov muddati o‘tgan — qaytadan boshlang' : 'Hali to‘lov kelmadi. To‘lagan bo‘lsangiz, 1 daqiqa kuting.', ['expired', 'revoked', 'eskirgan'].indexOf(r.state) > -1);
+  } catch (e) { if (!quiet) fail(e); }
+  payCheck.busy = false;
+}
+document.addEventListener('visibilitychange', () => { if (!document.hidden && S.bill) payCheck(null, true); });
 function tariffsSheet() {
   const T = S.d.tariffs, cur = S.d.shop.tariff, c = S.d.contact || '';
   const feat = k => k === 'start' ? ['1–2 usta', 'Kassa, mijozlar, bron', 'QR poster'] : k === 'standart' ? ['4 tagacha usta', 'SMS xizmati (o‘z telefoningiz SIM’idan)', 'Ommaviy SMS'] : ['8 tagacha usta', 'SMS xizmati', 'Rahbar paneli: har usta bo‘yicha hisobot, barcha bronlar'];
   openSheet(`<h3>Tariflar</h3>${Object.keys(T).map(k => `<div class="card" style="margin-bottom:10px;${k === cur ? 'border:2px solid var(--b)' : ''}">
     <div style="display:flex;justify-content:space-between;align-items:center"><b style="font:700 16px var(--h)">${T[k].name}</b><b>${som(T[k].price)}<span style="color:var(--m);font-weight:600;font-size:12px">/oy</span></b></div>
-    <div class="hint" style="font-size:13px">${feat(k).map(x => '✓ ' + x).join('<br>')}</div>${k === cur ? '<span class="pill" style="margin-top:8px">Hozirgi tarif</span>' : ''}</div>`).join('')}
-    <p class="hint" style="text-align:center;margin:10px 0 12px">Tarifni o‘zgartirish va to‘lov uchun administratorga yozing.</p>
-    ${c ? (c.startsWith('@') ? `<button class="btn p w" data-a="contact">${I('send', 18)} ${esc(c)} ga yozish</button>` : `<a class="btn p w" href="tel:${esc(c)}">${I('phone', 18)} ${esc(c)}</a>`) : ''}`);
+    <div class="hint" style="font-size:13px">${feat(k).map(x => '✓ ' + x).join('<br>')}</div>${k === cur ? '<span class="pill" style="margin-top:8px">Hozirgi tarif</span>' : ''}${S.d.pay && !S.d.shop.sold ? `<button class="btn s ${k === cur ? 'p' : 'g'}" style="margin-top:10px;margin-left:${k === cur ? '8px' : '0'}" data-a="paySheet" data-t="${k}">${I('card', 16)} To‘lash</button>` : ''}</div>`).join('')}
+    <p class="hint" style="text-align:center;margin:10px 0 12px">${S.d.pay ? 'Click, Payme, Uzum orqali onlayn to‘lang — obuna darhol uzayadi. Savol bo‘lsa administratorga yozing.' : 'Tarifni o‘zgartirish va to‘lov uchun administratorga yozing.'}</p>
+    ${c ? (c.startsWith('@') ? `<button class="btn ${S.d.pay ? 'g' : 'p'} w" data-a="contact">${I('send', 18)} ${esc(c)} ga yozish</button>` : `<a class="btn p w" href="tel:${esc(c)}">${I('phone', 18)} ${esc(c)}</a>`) : ''}`);
 }
 
 async function secJamoa(m) {
@@ -1082,6 +1143,10 @@ const A = {
   sec: el => { S.sec = el.dataset.v; renderTab(); window.scrollTo(0, 0); },
   secBack: () => { S.sec = null; renderTab(); },
   tariffs: tariffsSheet,
+  paySheet, payGo, payCheck,
+  payT: el => { S.pay.t = el.dataset.v; drawPay(); },
+  payM: el => { S.pay.m = Number(el.dataset.v); drawPay(); },
+  payOpen: () => { if (S.bill) { try { tg.openLink(S.bill.url); } catch (e) { window.open(S.bill.url, '_blank'); } } },
   invite,
   staffRm: async el => {
     if (!(await confirmBox(el.dataset.n + ' jamoadan chiqarilsinmi?'))) return;
