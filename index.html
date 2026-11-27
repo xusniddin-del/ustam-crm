@@ -571,12 +571,12 @@ async function secBuy(m) {
   ${yes('SMS dasturi — o‘zingizniki', S.buyT === 'start' ? 'Start’da SMS yo‘q — Standart yoki Biznesni tanlang' : 'Mijozlarga SMS o‘z telefoningiz SIM’idan')}
   ${yes('Barcha imkoniyatlar', feat[S.buyT])}
   ${yes('Oylik to‘lov yo‘q', 'Bir marta to‘laysiz, obuna hech qachon tugamaydi')}
-  ${yes('3 oy bepul texnik yordam', 'Savol va muammolar bo‘yicha')}
+  ${yes('1 oy bepul texnik yordam', 'Savol va muammolar bo‘yicha')}
   </div>
   <h2>Shartlar</h2>
   <div class="list">
-  ${no('Ma’lumotlar Ustam CRM serverida saqlanadi', 'Mijozlar, kassa va bronlar bizning serverimizda turadi. Busiz dastur ishlamaydi.')}
-  ${no('Yangilanishlar kelmaydi', 'Sotib olgan kuningizdagi versiya qoladi. Yangi imkoniyat va dizaynlar oylik obunachilarga chiqadi.')}
+  ${no('Ma’lumotlar Ustam CRM serverida saqlanadi', 'Ma’lumotlar sizniki — server faqat xavfsizlik va dastur 24/7 ishlashi uchun. Telefon yo‘qolsa ham hammasi joyida qoladi. Agar telefoningizda tursa, bron, eslatma va hisobot ishlashi uchun telefon kechayu kunduz yoqiq va internetda turishi kerak bo‘lardi.')}
+  ${no('Yangilanishlar kelmaydi', 'Sotib olgan kuningizdagi versiya qoladi. Yangi imkoniyat kerak bo‘lsa — alohida buyurtma: 100 000 so‘mdan 500 000 so‘mgacha, ishga qarab.')}
   </div>
   ${B.pending ? `<div class="notice" style="margin-top:14px">So‘rovingiz yuborilgan. Administrator siz bilan bog‘lanadi.</div>` : ''}
   <p class="err" id="buy-err"></p>
