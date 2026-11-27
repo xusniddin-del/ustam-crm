@@ -599,7 +599,7 @@ function deviceBlock(D, kind, canPair) {
   ${devs.length ? `<div class="list">${devs.map(d => `<div class="it"><div class="av" style="background:${d.online ? 'var(--okbg)' : 'var(--badbg)'};color:${d.online ? 'var(--ok)' : 'var(--bad)'}">${I('phone', 18)}</div>
     <div class="mid"><b>${esc(d.model || 'Android')} <span class="pill ${d.online ? 'ok' : 'bad'}">${d.online ? 'Onlayn' : 'Oflayn'}</span></b><span>Oxirgi aloqa: ${agoText(d.ago)} · ${d.sent} ta yuborgan</span></div>
     ${canPair ? `<button class="ic" data-a="smsUnpair" data-k="${kind}" data-id="${esc(d.id)}" aria-label="Uzish">${I('trash', 18)}</button>` : ''}</div>`).join('')}</div>
-    ${devs.some(d => !d.online) ? '<p class="hint">Oflayn telefon SMS yubormaydi. Telefon yoniq, internetga ulangan va Ustam SMS ilovasi ishlab turganini tekshiring.</p>' : ''}`
+    ${devs.some(d => !d.online) ? '<p class="hint">Oflayn telefon SMS yubormaydi. Telefon yoniq, internetga ulangan va SMS dasturi ishlab turganini tekshiring.</p>' : ''}`
     : `<div class="empty">Hali telefon ulanmagan. SMS’lar navbatda turadi va telefon ulanganda yuboriladi.</div>`}
   ${canPair ? `<button class="btn ${devs.length ? 'g' : 'p'} w" style="margin-top:12px" data-a="smsPair" data-k="${kind}">${I('phone', 18)} ${devs.length ? 'Yana telefon ulash' : 'Telefon ulash'}</button>` : ''}
   <div class="grid" style="grid-template-columns:repeat(3,minmax(0,1fr))">${met('debt', 'Navbatda', D.queued)}${met('check', 'Bugun', D.sentToday)}${met('ban', 'Xato', D.errToday)}</div>`;
@@ -620,11 +620,11 @@ async function smsPair(el) {
     <div style="font:700 44px/1.2 var(--h);letter-spacing:8px;color:var(--b);margin:6px 0">${esc(r.code)}</div>
     <button class="btn s g" data-a="copy" data-v="${esc(r.code)}">Nusxalash</button></div>
     <div class="list" style="margin-top:12px">
-    <div class="it"><div class="av">1</div><div class="mid"><b>Ustam SMS ilovasini yuklab oling</b><span>SMS yuboradigan telefonda oching</span></div></div>
-    <div class="it"><div class="av">2</div><div class="mid"><b>O‘rnating va oching</b><span>«Noma’lum manbalar»ga ruxsat bering, SMS yuborishga ruxsat bering</span></div></div>
+    <div class="it"><div class="av">1</div><div class="mid"><b>SMS dasturini yuklab oling</b><span>SMS yuboradigan telefonda pastdagi tugmani bosing</span></div></div>
+    <div class="it"><div class="av">2</div><div class="mid"><b>O‘rnating va oching</b><span>Telefon so‘rasa «Ruxsat berish» ni bosing: o‘rnatishga va SMS yuborishga</span></div></div>
     <div class="it"><div class="av">3</div><div class="mid"><b>Kodni yozib «Ulash» ni bosing</b><span>Telefon ulanganda botga xabar keladi</span></div></div></div>
-    <button class="btn p w" style="margin-top:12px" data-a="openApk" data-v="${esc(r.apk)}">${I('send', 18)} Ilovani yuklab olish (APK)</button>
-    <button class="btn g w" style="margin-top:8px" data-a="copy" data-v="${esc(r.apk)}">APK havolasini nusxalash</button>
+    <button class="btn p w" style="margin-top:12px" data-a="openApk" data-v="${esc(r.apk)}">${I('send', 18)} SMS dasturini yuklab olish</button>
+    <button class="btn g w" style="margin-top:8px" data-a="copy" data-v="${esc(r.apk)}">Yuklab olish havolasini nusxalash</button>
     <p class="hint" style="text-align:center">Havolani SMS telefoniga Telegram orqali yuborib, o‘sha yerda oching.</p>`);
   } catch (e) { fail(e); }
   el.disabled = false;
@@ -640,7 +640,7 @@ async function secSms(m) {
   const c = S.sms.cfg;
   const tg2 = (k, t, sub) => `<div class="it"><div class="mid"><b>${t}</b><span>${sub}</span></div><button class="tgl ${c.on[k] ? 'on' : ''}" data-a="smsOn" data-k="${k}" aria-label="${t}"></button></div>`;
   m.innerHTML = back + `<h3>SMS xizmati</h3>
-  <div class="card" style="font-size:13px;color:var(--m)">SMS’lar <b style="color:var(--n)">sartaroshxonangiz telefonining SIM kartasidan</b> ketadi (Ustam SMS ilovasi orqali). Narxi — SIM tarifingizdagi SMS paketi bo‘yicha, qo‘shimcha to‘lov yo‘q.</div>
+  <div class="card" style="font-size:13px;color:var(--m)">SMS’lar <b style="color:var(--n)">sartaroshxonangiz telefonining SIM kartasidan</b> ketadi (SMS dasturi orqali). Narxi — SIM tarifingizdagi SMS paketi bo‘yicha, qo‘shimcha to‘lov yo‘q.</div>
   ${deviceBlock(S.sms, 'shop', true)}
   <h2>Qachon yuborilsin</h2>
   <div class="list">${tg2('confirm', 'Bron tasdiqlanganda', 'Mijozga sana va vaqt')}${tg2('remind', 'Navbatdan oldin eslatma', '1–2 soat oldin')}${tg2('back', 'Uzoq kelmaganni qaytarish', 'Har kuni 21:00 da tekshiriladi, kuniga 50 tagacha')}</div>
