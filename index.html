@@ -546,7 +546,7 @@ function renderBosh(m) {
 }
 function tariffsSheet() {
   const T = S.d.tariffs, cur = S.d.shop.tariff, c = S.d.contact || '';
-  const feat = k => k === 'start' ? ['1–2 usta', 'Kassa, mijozlar, bron', 'QR poster'] : k === 'standart' ? ['4 tagacha usta', 'SMS xizmati (o‘z Eskiz hisobingiz)', 'Ommaviy SMS'] : ['8 tagacha usta', 'SMS xizmati', 'Rahbar paneli: har usta bo‘yicha hisobot, barcha bronlar'];
+  const feat = k => k === 'start' ? ['1–2 usta', 'Kassa, mijozlar, bron', 'QR poster'] : k === 'standart' ? ['4 tagacha usta', 'SMS xizmati (o‘z telefoningiz SIM’idan)', 'Ommaviy SMS'] : ['8 tagacha usta', 'SMS xizmati', 'Rahbar paneli: har usta bo‘yicha hisobot, barcha bronlar'];
   openSheet(`<h3>Tariflar</h3>${Object.keys(T).map(k => `<div class="card" style="margin-bottom:10px;${k === cur ? 'border:2px solid var(--b)' : ''}">
     <div style="display:flex;justify-content:space-between;align-items:center"><b style="font:700 16px var(--h)">${T[k].name}</b><b>${som(T[k].price)}<span style="color:var(--m);font-weight:600;font-size:12px">/oy</span></b></div>
     <div class="hint" style="font-size:13px">${feat(k).map(x => '✓ ' + x).join('<br>')}</div>${k === cur ? '<span class="pill" style="margin-top:8px">Hozirgi tarif</span>' : ''}</div>`).join('')}
@@ -590,6 +590,46 @@ function secQr() {
   <p class="hint" style="text-align:center">PDF chatga keladi — chop etib sartaroshxonaga osib qo‘ying.</p>`;
 }
 
+/* --- SMS telefon (Ustam SMS ilovasi) — sartaroshxona va admin uchun umumiy bloklar --- */
+const SQS = { navbatda: ['Navbatda', 'warn'], yuborilmoqda: ['Yuborilmoqda', ''], yuborildi: ['Yuborildi', 'ok'], xato: ['Xato', 'bad'] };
+function agoText(m) { return m < 2 ? 'hozir' : m < 60 ? m + ' daqiqa oldin' : m < 1440 ? Math.round(m / 60) + ' soat oldin' : Math.round(m / 1440) + ' kun oldin'; }
+function deviceBlock(D, kind, canPair) {
+  const devs = D.devices || [];
+  return `<h2>SMS telefon <small>${devs.length ? devs.length + ' ta ulangan' : 'ulanmagan'}</small></h2>
+  ${devs.length ? `<div class="list">${devs.map(d => `<div class="it"><div class="av" style="background:${d.online ? 'var(--okbg)' : 'var(--badbg)'};color:${d.online ? 'var(--ok)' : 'var(--bad)'}">${I('phone', 18)}</div>
+    <div class="mid"><b>${esc(d.model || 'Android')} <span class="pill ${d.online ? 'ok' : 'bad'}">${d.online ? 'Onlayn' : 'Oflayn'}</span></b><span>Oxirgi aloqa: ${agoText(d.ago)} · ${d.sent} ta yuborgan</span></div>
+    ${canPair ? `<button class="ic" data-a="smsUnpair" data-k="${kind}" data-id="${esc(d.id)}" aria-label="Uzish">${I('trash', 18)}</button>` : ''}</div>`).join('')}</div>
+    ${devs.some(d => !d.online) ? '<p class="hint">Oflayn telefon SMS yubormaydi. Telefon yoniq, internetga ulangan va Ustam SMS ilovasi ishlab turganini tekshiring.</p>' : ''}`
+    : `<div class="empty">Hali telefon ulanmagan. SMS’lar navbatda turadi va telefon ulanganda yuboriladi.</div>`}
+  ${canPair ? `<button class="btn ${devs.length ? 'g' : 'p'} w" style="margin-top:12px" data-a="smsPair" data-k="${kind}">${I('phone', 18)} ${devs.length ? 'Yana telefon ulash' : 'Telefon ulash'}</button>` : ''}
+  <div class="grid" style="grid-template-columns:repeat(3,minmax(0,1fr))">${met('debt', 'Navbatda', D.queued)}${met('check', 'Bugun', D.sentToday)}${met('ban', 'Xato', D.errToday)}</div>`;
+}
+function smsLog(D) {
+  const L = D.log || [];
+  return `<h2>Oxirgi SMS’lar <small>${L.length} ta</small></h2>
+  ${L.length ? `<div class="list">${L.map(l => { const st = SQS[l.status] || [l.status, '']; return `<div class="it"><div class="mid"><b>${phoneF(l.phone)} <span class="pill ${st[1]}">${st[0]}</span></b><span>${esc(l.date)} · ${esc(l.type)} · ${esc(String(l.text).slice(0, 70))}</span>${l.err ? `<span style="color:var(--bad)">${esc(l.err)}</span>` : ''}</div></div>`; }).join('')}</div>` : '<div class="empty">Hali SMS yo‘q</div>'}`;
+}
+async function smsPair(el) {
+  const admin = el.dataset.k === 'admin';
+  el.disabled = true;
+  try {
+    const r = await api(admin ? 'a_sms_pair' : 'o_sms_pair');
+    openSheet(`<h3>Telefon ulash</h3>
+    <p style="color:var(--m);margin:0 0 12px">SMS’lar shu telefon SIM kartasidan ketadi. Faqat <b style="color:var(--n)">Android</b> telefon bo‘lishi kerak.</p>
+    <div class="card" style="text-align:center"><div class="hint" style="margin:0">Ulash kodi · ${r.minutes} daqiqa amal qiladi</div>
+    <div style="font:700 44px/1.2 var(--h);letter-spacing:8px;color:var(--b);margin:6px 0">${esc(r.code)}</div>
+    <button class="btn s g" data-a="copy" data-v="${esc(r.code)}">Nusxalash</button></div>
+    <div class="list" style="margin-top:12px">
+    <div class="it"><div class="av">1</div><div class="mid"><b>Ustam SMS ilovasini yuklab oling</b><span>SMS yuboradigan telefonda oching</span></div></div>
+    <div class="it"><div class="av">2</div><div class="mid"><b>O‘rnating va oching</b><span>«Noma’lum manbalar»ga ruxsat bering, SMS yuborishga ruxsat bering</span></div></div>
+    <div class="it"><div class="av">3</div><div class="mid"><b>Kodni yozib «Ulash» ni bosing</b><span>Telefon ulanganda botga xabar keladi</span></div></div></div>
+    <button class="btn p w" style="margin-top:12px" data-a="openApk" data-v="${esc(r.apk)}">${I('send', 18)} Ilovani yuklab olish (APK)</button>
+    <button class="btn g w" style="margin-top:8px" data-a="copy" data-v="${esc(r.apk)}">APK havolasini nusxalash</button>
+    <p class="hint" style="text-align:center">Havolani SMS telefoniga Telegram orqali yuborib, o‘sha yerda oching.</p>`);
+  } catch (e) { fail(e); }
+  el.disabled = false;
+}
+
 async function secSms(m) {
   const back = `<button class="btn g s" data-a="secBack" style="margin-bottom:12px">← Orqaga</button>`;
   if (!S.d.shop.sms) {
@@ -600,17 +640,13 @@ async function secSms(m) {
   const c = S.sms.cfg;
   const tg2 = (k, t, sub) => `<div class="it"><div class="mid"><b>${t}</b><span>${sub}</span></div><button class="tgl ${c.on[k] ? 'on' : ''}" data-a="smsOn" data-k="${k}" aria-label="${t}"></button></div>`;
   m.innerHTML = back + `<h3>SMS xizmati</h3>
-  <div class="card" style="font-size:13px;color:var(--m)">SMS sartaroshxonangizning <b style="color:var(--n)">o‘z Eskiz.uz hisobidan</b> ketadi va balansi o‘sha yerdan yechiladi. Eskiz.uz da ro‘yxatdan o‘tib, email va parolni shu yerga yozing.</div>
-  <h2>Eskiz hisobi</h2>
-  <div class="card">
-  <label>Eskiz email<input id="sm-email" type="email" value="${esc(c.email)}" placeholder="email@gmail.com"></label>
-  <label>Eskiz parol <small>${c.hasPass ? '(saqlangan — o‘zgartirish uchun yozing)' : ''}</small><input id="sm-pass" type="password" placeholder="${c.hasPass ? '••••••••' : 'Parol'}"></label>
-  <label>Jo‘natuvchi nomi <small>(Eskiz’da tasdiqlangan, odatda 4546)</small><input id="sm-from" value="${esc(c.from)}"></label></div>
+  <div class="card" style="font-size:13px;color:var(--m)">SMS’lar <b style="color:var(--n)">sartaroshxonangiz telefonining SIM kartasidan</b> ketadi (Ustam SMS ilovasi orqali). Narxi — SIM tarifingizdagi SMS paketi bo‘yicha, qo‘shimcha to‘lov yo‘q.</div>
+  ${deviceBlock(S.sms, 'shop', true)}
   <h2>Qachon yuborilsin</h2>
-  <div class="list">${tg2('confirm', 'Bron tasdiqlanganda', 'Mijozga sana va vaqt')}${tg2('remind', 'Navbatdan oldin eslatma', '1–2 soat oldin')}${tg2('back', 'Uzoq kelmaganni qaytarish', 'Har kuni 21:00 da tekshiriladi')}</div>
+  <div class="list">${tg2('confirm', 'Bron tasdiqlanganda', 'Mijozga sana va vaqt')}${tg2('remind', 'Navbatdan oldin eslatma', '1–2 soat oldin')}${tg2('back', 'Uzoq kelmaganni qaytarish', 'Har kuni 21:00 da tekshiriladi, kuniga 50 tagacha')}</div>
   <label>Necha kun kelmasa «qaytarish» SMS<input id="sm-days" type="number" value="${c.backDays}"></label>
   <h2>Matnlar</h2>
-  <p class="hint" style="margin-top:-4px">O‘zgaruvchilar: {shop} {date} {time} {ism} {usta} {address} {phone}. Eskiz matnlarni moderatsiyadan o‘tkazadi — yangi matnni avval Eskiz kabinetida tasdiqlating. Lotin harflarida ʻ o‘rniga oddiy ' ishlating, aks holda SMS qimmatlashadi.</p>
+  <p class="hint" style="margin-top:-4px">O‘zgaruvchilar: {shop} {date} {time} {ism} {usta} {address} {phone}. Lotin harflarida ʻ va ‘ o‘rniga oddiy ' ishlating: maxsus belgi bo‘lsa, bitta SMS 160 emas 70 belgiga bo‘linadi.</p>
   <label>Tasdiq<textarea id="sm-t-confirm">${esc(c.t.confirm)}</textarea></label>
   <label>Eslatma<textarea id="sm-t-remind">${esc(c.t.remind)}</textarea></label>
   <label>Qaytarish<textarea id="sm-t-back">${esc(c.t.back)}</textarea></label>
@@ -618,14 +654,12 @@ async function secSms(m) {
   <button class="btn p w" style="margin-top:8px" data-a="smsSave">Saqlash</button>
   <h2>Sinov SMS</h2>
   <div class="row2" style="margin-top:0"><input id="sm-test" type="tel" placeholder="+998 90 123 45 67" style="margin:0;flex:1"><button class="btn g s" style="height:48px" data-a="smsTest">Yuborish</button></div>
-  <h2>Oxirgi SMS lar <small>${S.sms.log.length} ta</small></h2>
-  ${S.sms.log.length ? `<div class="list">${S.sms.log.map(l => `<div class="it"><div class="mid"><b>${phoneF(l.phone)} <span class="pill ${String(l.status).startsWith('xato') ? 'bad' : 'ok'}">${String(l.status).startsWith('xato') ? 'xato' : 'ketdi'}</span></b><span>${esc(l.date)} · ${esc(l.type)} · ${esc(String(l.text).slice(0, 60))}</span></div></div>`).join('')}</div>` : '<div class="empty">Hali SMS yuborilmagan</div>'}`;
+  ${smsLog(S.sms)}`;
 }
 async function smsSave(el) {
   const c = S.sms.cfg;
-  const f = { email: val('sm-email').trim(), pass: val('sm-pass'), from: val('sm-from').trim(), on: c.on, backDays: +val('sm-days'), t: { confirm: val('sm-t-confirm'), remind: val('sm-t-remind'), back: val('sm-t-back') } };
-  if (f.email && !/^\S+@\S+\.\S+$/.test(f.email)) return fail({ msg: 'Email noto‘g‘ri' }, 'sm-err');
-  if (f.email && !f.pass && !c.hasPass) return fail({ msg: 'Eskiz parolini yozing' }, 'sm-err');
+  const f = { on: c.on, backDays: +val('sm-days'), t: { confirm: val('sm-t-confirm'), remind: val('sm-t-remind'), back: val('sm-t-back') } };
+  if (!(f.backDays >= 7)) return fail({ msg: 'Kamida 7 kun yozing' }, 'sm-err');
   el.disabled = true;
   try { await api('o_sms_save', { f }); S.sms = null; haptic('success'); toast('SMS sozlamalari saqlandi'); renderTab(); }
   catch (e) { el.disabled = false; fail(e, 'sm-err'); }
@@ -651,7 +685,7 @@ async function massSend(el) {
     const r = await api('o_mass', { text, channel: picked('g-ch'), filter: picked('g-mf') });
     haptic('success');
     openSheet(`<div style="text-align:center"><div class="big" style="background:var(--okbg);color:var(--ok)">${I('send', 30)}</div><h3>Yuborildi</h3>
-    <p style="color:var(--m)">Jami: ${r.total} ta mijoz<br>Telegram: <b style="color:var(--n)">${r.tg}</b> · SMS: <b style="color:var(--n)">${r.sms}</b>${r.fail ? ' · xato: ' + r.fail : ''}${r.skip ? '<br>' + r.skip + ' ta mijozda Telegram ham, telefon ham yo‘q' : ''}</p>
+    <p style="color:var(--m)">Jami: ${r.total} ta mijoz<br>Telegram: <b style="color:var(--n)">${r.tg}</b> · SMS navbatga: <b style="color:var(--n)">${r.sms}</b>${r.fail ? ' · xato: ' + r.fail : ''}${r.skip ? '<br>' + r.skip + ' ta mijozda Telegram ham, telefon ham yo‘q' : ''}</p>
     <button class="btn p w" data-a="closeSheet">Yaxshi</button></div>`);
     S.sec = null; renderTab();
   } catch (e) { el.disabled = false; el.textContent = 'Yuborish'; fail(e, 'ms-err'); }
@@ -835,7 +869,7 @@ async function renderATab() {
   if (t === 'shops') { m.innerHTML = aShops(); drawShops(); }
   if (t === 'msg') { if (!S.hist) { m.innerHTML = loader(); try { S.hist = await api('a_history', {}, true); } catch (e) { return fail(e); } } m.innerHTML = aMsg(); }
   if (t === 'set') {
-    if (!S.admins) { m.innerHTML = loader(); try { S.admins = await api('a_admins', {}, true); if (S.d.super) S.admins.sms = await api('a_sms_get', {}, true); if (!S.hist) S.hist = await api('a_history', {}, true); } catch (e) { return fail(e); } }
+    if (!S.admins) { m.innerHTML = loader(); try { S.admins = await api('a_admins', {}, true); S.admins.sms = await api('a_sms_get', {}, true); if (!S.hist) S.hist = await api('a_history', {}, true); } catch (e) { return fail(e); } }
     m.innerHTML = aSet();
   }
 }
@@ -909,7 +943,7 @@ function msgForm(one) {
   ${one ? `<div class="card" style="font-weight:700">${esc(one.shop)} (ID ${one.id})</div>` : `<select id="am-target"><option value="all">Barcha sartaroshxonalar</option><option value="expiring">Muddati tugayotganlar (3 kun)</option><option value="start">Start tarifidagilar</option><option value="standart">Standart tarifidagilar</option><option value="biznes">Biznes tarifidagilar</option></select>`}
   <div class="seg" id="g-who" style="margin-top:10px"><button class="on" data-a="pick" data-g="g-who" data-v="egasi">Faqat egalariga</button><button data-a="pick" data-g="g-who" data-v="all">Barcha ustalarga</button></div>
   <div class="lbl">Qanday</div><div class="seg" id="g-ach"><button class="on" data-a="pick" data-g="g-ach" data-v="tg">Telegram</button><button data-a="pick" data-g="g-ach" data-v="sms">SMS</button><button data-a="pick" data-g="g-ach" data-v="both">Ikkalasi</button></div>
-  <p class="hint">SMS sizning platforma Eskiz hisobingizdan ketadi (Sozlama bo‘limida).</p>
+  <p class="hint">SMS sizning admin telefoningiz SIM kartasidan ketadi (Sozlama → SMS telefon).</p>
   <label>Xabar matni<textarea id="am-text" placeholder="Masalan: Yangi imkoniyat qo‘shildi — ..."></textarea></label>
   <p class="err" id="am-err"></p>
   <button class="btn p w" style="margin-top:8px" data-a="aSend" data-id="${one ? one.id : ''}">${I('send', 18)} Yuborish</button>`;
@@ -930,7 +964,7 @@ async function aSend(el) {
   try {
     const r = await api('a_msg', { text, channel: picked('g-ach'), who: picked('g-who'), target: one ? 'one' : val('am-target'), shopId: one });
     haptic('success'); closeSheet(); S.hist = null;
-    toast(`Yuborildi: ${r.people} kishi · TG ${r.tg} · SMS ${r.sms}${r.fail ? ' · xato ' + r.fail : ''}`);
+    toast(`Yuborildi: ${r.people} kishi · TG ${r.tg} · SMS navbatga ${r.sms}${r.fail ? ' · xato ' + r.fail : ''}`);
     if (S.aTab === 'msg') renderATab();
   } catch (e) { el.disabled = false; el.textContent = 'Yuborish'; fail(e, 'am-err'); }
 }
@@ -940,11 +974,10 @@ function aSet() {
   <div class="list"><div class="it"><div class="av" style="background:var(--n);color:#fff">${I('shield', 18)}</div><div class="mid"><b>Asosiy admin</b><span>Script Properties’dagi ADMIN_ID</span></div></div>
   ${A2.admins.map(a => `<div class="it"><div class="av">${esc(ini(a.name))}</div><div class="mid"><b>${esc(a.name || a.tgId)}</b><span>ID ${esc(a.tgId)} · ${esc(String(a.added).slice(0, 10))}</span></div>${sup ? `<button class="ic" data-a="aAdmRm" data-id="${esc(a.tgId)}" aria-label="O‘chirish">${I('trash', 18)}</button>` : ''}</div>`).join('')}</div>
   ${sup ? `<button class="btn p w" style="margin-top:12px" data-a="aAdmInv">${I('plus', 20)} Admin (sherik) qo‘shish</button><p class="hint" style="text-align:center">Adminlar hamma narsani ko‘radi va boshqaradi, faqat admin qo‘sha olmaydi.</p>` : ''}
-  ${sup ? `<h2>Platforma SMS (Eskiz)</h2><div class="card"><p class="hint" style="margin-top:0">Ustalarga SMS shu hisobdan ketadi.</p>
-    <label>Eskiz email<input id="ps-email" value="${esc(A2.sms.email)}"></label>
-    <label>Parol <small>${A2.sms.hasPass ? '(saqlangan)' : ''}</small><input id="ps-pass" type="password" placeholder="${A2.sms.hasPass ? '••••••••' : 'Parol'}"></label>
-    <label>Jo‘natuvchi<input id="ps-from" value="${esc(A2.sms.from)}"></label>
-    <p class="err" id="ps-err"></p><button class="btn p w" style="margin-top:8px" data-a="aSmsSave">Saqlash</button></div>` : ''}
+  <h3 style="margin-top:24px">Admin SMS telefoni</h3>
+  <div class="card" style="font-size:13px;color:var(--m)">Ustalarga SMS <b style="color:var(--n)">sizning telefoningiz SIM kartasidan</b> ketadi. Sartaroshxonalar telefonlari bu yerga aralashmaydi.</div>
+  ${deviceBlock(A2.sms, 'admin', sup)}
+  ${smsLog(A2.sms)}
   <h2>To‘lovlar tarixi <small>${pays.length} ta</small></h2>
   ${pays.length ? `<div class="list">${pays.map(p => `<div class="it"><div class="mid"><b>${esc(p.shop)} · ${esc((S.d.tariffs[p.tariff] || {}).name || p.tariff)} · ${p.months} oy</b><span>${esc(p.date)} · ${esc(p.by)}</span></div><div class="end"><b>${fmt(p.amount)}</b></div></div>`).join('')}</div>` : '<div class="empty">Hali to‘lov yo‘q</div>'}`;
 }
@@ -999,7 +1032,7 @@ const A = {
     const ph = val('sm-test');
     if (digits(ph).length < 9) return toast('Raqamni yozing', true);
     el.disabled = true;
-    try { await api('o_sms_test', { phone: ph }); toast('Sinov SMS yuborildi'); S.sms = null; renderTab(); } catch (e) { fail(e); }
+    try { await api('o_sms_test', { phone: ph }); toast('Sinov SMS navbatga qo‘yildi — telefon 1 daqiqada yuboradi'); S.sms = null; renderTab(); } catch (e) { fail(e); }
     el.disabled = false;
   },
   massSend,
@@ -1014,9 +1047,12 @@ const A = {
   aF: el => { S.aF = el.dataset.v; document.querySelectorAll('[data-a=aF]').forEach(b => b.classList.toggle('on', b === el)); drawShops(); },
   aShop, aExtend, aBlock, aMsgOne, aSend, aAdmInv,
   aAdmRm: async el => { if (!(await confirmBox('Admin o‘chirilsinmi?'))) return; try { const r = await api('a_admin_remove', { tgId: el.dataset.id }); S.admins.admins = r.admins; renderATab(); } catch (e) { fail(e); } },
-  aSmsSave: async el => {
-    el.disabled = true;
-    try { await api('a_sms_save', { email: val('ps-email').trim(), pass: val('ps-pass'), from: val('ps-from').trim() }); toast('Saqlandi'); S.admins = null; renderATab(); } catch (e) { el.disabled = false; fail(e, 'ps-err'); }
+  smsPair,
+  openApk: el => { try { tg.openLink(el.dataset.v); } catch (e) { window.open(el.dataset.v); } },
+  smsUnpair: async el => {
+    if (!(await confirmBox('Bu telefon uzilsinmi? U endi SMS yubormaydi.'))) return;
+    const admin = el.dataset.k === 'admin';
+    try { await api(admin ? 'a_sms_unpair' : 'o_sms_unpair', { id: el.dataset.id }); toast('Telefon uzildi'); if (admin) { S.admins = null; renderATab(); } else { S.sms = null; renderTab(); } } catch (e) { fail(e); }
   }
 };
 document.addEventListener('click', e => {
