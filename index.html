@@ -1,0 +1,1035 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<title>Ustam CRM</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--b:#1D5FE0;--b2:#164BB5;--n:#0B1B3F;--m:#5A6785;--l:#EAF1FF;--line:#E3E9F5;--bg:#F5F8FD;--w:#FFFFFF;
+--ok:#0F7A45;--okbg:#E4F5EC;--warn:#9A5300;--warnbg:#FFF1DC;--bad:#C42B2B;--badbg:#FDECEC;--pro:#5B3FD6;--probg:#EEEAFE;--r:16px;--h:'Unbounded',system-ui,sans-serif}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--n);font:500 15px/1.45 Manrope,system-ui,sans-serif}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none;padding:0}
+a{color:var(--b);text-decoration:none}
+.top{position:sticky;top:0;z-index:5;background:var(--w);border-bottom:1px solid var(--line);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.logo{width:38px;height:38px;border-radius:12px;background:#EAF1FF;color:#fff;display:flex;align-items:flex-end;justify-content:center;flex:none;overflow:hidden}
+.logo.adm{background:var(--n);align-items:center}
+.brand b{display:block;font:700 15px/1.2 var(--h);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand span{display:block;font-size:12px;color:var(--m)}
+.modes{display:flex;gap:4px;background:#E9EEF7;border-radius:10px;padding:3px;flex:none}
+.modes button{height:30px;padding:0 10px;border-radius:8px;font-size:12px;font-weight:800;color:var(--m)}
+.modes button.on{background:var(--w);color:var(--n)}
+main{padding:16px 16px 110px;max-width:560px;margin:0 auto}
+h2{font:600 16px/1.3 var(--h);margin:24px 0 10px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+h2 small{font:600 12px Manrope,system-ui,sans-serif;color:var(--m)}
+h3{font:600 18px/1.3 var(--h);margin:0 0 14px}
+.hero{background:var(--n);color:#fff;border-radius:22px;padding:18px 18px 16px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:180px;height:180px;border-radius:50%;background:rgba(29,95,224,.45)}
+.hero>*{position:relative;z-index:1}
+.hero-l{font-size:12px;color:#A9C2F5;font-weight:600}
+.hero-v{font:700 28px/1.15 var(--h);margin:6px 0 14px;letter-spacing:-.5px}
+.hero-row{display:flex;gap:10px}
+.hero-row div{flex:1;background:rgba(255,255,255,.08);border-radius:12px;padding:8px 10px;min-width:0}
+.hero-row span{display:block;font-size:11px;color:#A9C2F5}
+.hero-row b{font-weight:700;font-size:14px;white-space:nowrap}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+.met{background:var(--w);border:1px solid var(--line);border-radius:var(--r);padding:12px;min-width:0}
+.met span{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--m);font-weight:600}
+.met b{display:block;font:700 16px/1.3 var(--h);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row2{display:flex;gap:10px;margin-top:14px}
+.btn{height:48px;border-radius:14px;padding:0 16px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:8px;flex:1}
+.btn.p{background:var(--b);color:#fff}.btn.p:active{background:var(--b2)}
+.btn.g{background:var(--w);border:1px solid var(--line);color:var(--n)}
+.btn.s{height:36px;border-radius:10px;font-size:13px;padding:0 12px;flex:none}
+.btn.ok{background:var(--okbg);color:var(--ok)}.btn.no{background:var(--badbg);color:var(--bad)}
+.btn.w{width:100%;flex:none}
+.btn:disabled{opacity:.5}
+.list{background:var(--w);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.it{display:flex;align-items:center;gap:12px;padding:12px 14px;border-top:1px solid var(--line)}
+.it:first-child{border-top:0}
+.av{width:40px;height:40px;border-radius:12px;background:var(--l);color:var(--b);font:700 14px var(--h);display:flex;align-items:center;justify-content:center;flex:none}
+.it .mid{flex:1;min-width:0}
+.it .mid b{display:flex;align-items:center;gap:6px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.it .mid span{display:block;font-size:12px;color:var(--m)}
+.it .mid span.pill{display:inline-block;font-size:11px}
+.it .end{text-align:right;flex:none}
+.it .end b{display:block;font-weight:800}
+.pill{display:inline-block;font-size:11px;font-weight:700;padding:3px 8px;border-radius:8px;background:var(--l);color:var(--b);white-space:nowrap}
+.pill.ok{background:var(--okbg);color:var(--ok)}.pill.warn{background:var(--warnbg);color:var(--warn)}
+.pill.bad{background:var(--badbg);color:var(--bad)}.pill.gray{background:#EEF0F4;color:#5F6676}.pill.pro{background:var(--probg);color:var(--pro)}
+.ic{width:34px;height:34px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;color:var(--m);flex:none}
+.ic:active{background:var(--l)}
+.empty{background:var(--w);border:1px dashed var(--line);border-radius:var(--r);padding:20px;text-align:center;color:var(--m);font-size:14px}
+.nav{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--w);border-top:1px solid var(--line);display:flex;padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
+.nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;font-weight:700;color:#8A94AB;padding:6px 0;position:relative}
+.nav button.on{color:var(--b)}
+.nav i{position:absolute;top:2px;left:calc(50% + 6px);min-width:18px;height:18px;border-radius:9px;background:var(--bad);color:#fff;font:800 10px/18px Manrope,system-ui,sans-serif;font-style:normal}
+.seg{display:flex;background:#E9EEF7;border-radius:12px;padding:3px;gap:3px}
+.seg button{flex:1;height:38px;border-radius:9px;font-weight:700;font-size:13px;color:var(--m)}
+.seg button.on{background:var(--w);color:var(--n);box-shadow:0 1px 2px rgba(11,27,63,.12)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips.sc{flex-wrap:nowrap;overflow-x:auto;margin:0 -16px;padding:0 16px 4px;scrollbar-width:none}
+.chips.sc::-webkit-scrollbar{display:none}
+.chip{height:36px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:var(--w);font-weight:700;font-size:13px;color:var(--n);flex:none;white-space:nowrap}
+.chip.on{background:var(--l);border-color:var(--b);color:var(--b)}
+label,.lbl{display:block;font-size:13px;font-weight:700;color:var(--m);margin:12px 0 6px}
+label small{font-weight:500}
+input,select,textarea{width:100%;height:48px;border:1px solid var(--line);border-radius:12px;padding:0 14px;background:var(--w);font-weight:600;outline:none;margin-top:6px}
+textarea{height:110px;padding:12px 14px;resize:vertical;line-height:1.45}
+input:focus,select:focus,textarea:focus{border-color:var(--b);box-shadow:0 0 0 3px rgba(29,95,224,.15)}
+.err{color:var(--bad);font-size:13px;font-weight:600;margin:10px 0 0;min-height:1px}
+.hint{font-size:12px;color:var(--m);margin:6px 0 0}
+#sheet{position:fixed;inset:0;z-index:20;display:none}
+#sheet.on{display:block}
+.sh-bg{position:absolute;inset:0;background:rgba(11,27,63,.45)}
+.sh{position:absolute;left:0;right:0;bottom:0;max-height:92vh;overflow:auto;background:var(--w);border-radius:24px 24px 0 0;padding:10px 18px calc(20px + env(safe-area-inset-bottom));max-width:560px;margin:0 auto;animation:up .22s ease-out}
+.sh-h{width:40px;height:5px;border-radius:3px;background:var(--line);margin:0 auto 14px}
+@keyframes up{from{transform:translateY(40px);opacity:.5}to{transform:none;opacity:1}}
+#toast{position:fixed;left:16px;right:16px;top:12px;z-index:30;display:flex;justify-content:center;pointer-events:none}
+#toast div{background:var(--n);color:#fff;border-radius:14px;padding:12px 16px;font-weight:700;font-size:14px;max-width:420px;box-shadow:0 8px 24px rgba(11,27,63,.25);animation:up .2s}
+#toast div.bad{background:var(--bad)}
+#bar{position:fixed;top:0;left:0;height:3px;width:0;background:var(--b);z-index:40;transition:width .4s}
+#bar.on{width:80%;transition:width 6s cubic-bezier(.1,.7,.2,1)}
+.center{min-height:88vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px}
+.big{width:72px;height:72px;border-radius:22px;background:var(--l);color:var(--b);display:flex;align-items:center;justify-content:center;margin:0 auto 18px}
+.center h3{font-size:20px}.center p{color:var(--m);margin:0 0 20px;max-width:330px}
+.spin{width:36px;height:36px;border:3px solid var(--l);border-top-color:var(--b);border-radius:50%;animation:sp .8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.card{background:var(--w);border:1px solid var(--line);border-radius:var(--r);padding:14px}
+.shopcard{background:var(--n);color:#fff;border-radius:22px;padding:18px;position:relative;overflow:hidden}
+.shopcard:after{content:"";position:absolute;right:-50px;bottom:-70px;width:170px;height:170px;border-radius:50%;background:rgba(29,95,224,.5)}
+.shopcard>*{position:relative;z-index:1}
+.shopcard small{font-size:11px;letter-spacing:2px;color:#A9C2F5;font-weight:700}
+.shopcard h1{font:700 24px/1.15 var(--h);margin:4px 0 6px}
+.shopcard p{margin:2px 0;color:#D5E2FB;font-size:13px;display:flex;gap:6px;align-items:flex-start}
+.days{display:flex;gap:8px;overflow-x:auto;padding:2px 16px 6px;margin:0 -16px;scrollbar-width:none}
+.days::-webkit-scrollbar{display:none}
+.day{flex:none;width:62px;height:70px;border-radius:14px;border:1px solid var(--line);background:var(--w);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.day span{font-size:11px;color:var(--m);font-weight:700}.day b{font:700 18px var(--h)}
+.day.on{background:var(--b);border-color:var(--b);color:#fff}.day.on span{color:#D5E2FB}
+.slots{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.slot{height:44px;border-radius:12px;border:1px solid var(--line);background:var(--w);font-weight:800;font-size:14px}
+.slot.on{background:var(--b);border-color:var(--b);color:#fff}
+.slot:disabled{background:#F1F3F8;color:#B3BACB;text-decoration:line-through;border-color:#F1F3F8}
+.bookbar{position:fixed;left:0;right:0;bottom:0;z-index:7;background:var(--w);border-top:1px solid var(--line);padding:12px 16px calc(12px + env(safe-area-inset-bottom))}
+.bookbar div{max-width:560px;margin:0 auto;display:flex;gap:12px;align-items:center}
+.bookbar span{flex:1;font-weight:700;font-size:14px}.bookbar span small{display:block;color:var(--m);font-weight:600;font-size:12px}
+.bars{display:flex;align-items:flex-end;gap:3px;height:120px;padding-top:8px}
+.bars div{flex:1;display:flex;flex-direction:column;justify-content:flex-end;gap:2px;height:100%}
+.bars i{display:block;border-radius:3px 3px 0 0;background:var(--b);min-height:2px}
+.bars i.x{background:#F3A6A6}
+.legend{display:flex;gap:14px;font-size:12px;color:var(--m);font-weight:600;margin-top:8px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--b);margin-right:5px;vertical-align:-1px}
+.legend i.x{background:#F3A6A6}
+.notice{background:var(--warnbg);color:var(--warn);border-radius:var(--r);padding:14px;font-weight:600;font-size:14px}
+.pv{border-radius:14px;overflow:hidden;border:1px solid var(--line);margin:12px auto 0;background:#fff}
+#poster-host{position:absolute;left:-12000px;top:0}
+.idbox{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--l);border-radius:14px;padding:12px 14px}
+.idbox b{font:700 26px var(--h);color:var(--b)}
+.idbox span{font-size:12px;color:var(--m);font-weight:600}
+.menu .it{cursor:pointer}
+.menu .it .av{background:var(--bg);color:var(--n)}
+.tgl{position:relative;width:46px;height:28px;border-radius:14px;background:#D3D9E6;flex:none;transition:.2s}
+.tgl:after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 2px rgba(0,0,0,.2)}
+.tgl.on{background:var(--ok)}.tgl.on:after{left:21px}
+.bar1{height:8px;border-radius:4px;background:var(--l);overflow:hidden;margin-top:6px}.bar1 i{display:block;height:100%;background:var(--b);border-radius:4px}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;color:var(--m);font-weight:700;font-size:12px;padding:8px 6px;border-bottom:1px solid var(--line)}
+.tbl td{padding:9px 6px;border-bottom:1px solid var(--line);font-weight:600}
+.tbl td.r,.tbl th.r{text-align:right}
+.lock{display:flex;gap:12px;align-items:center;background:var(--probg);color:var(--pro);border-radius:var(--r);padding:14px;font-weight:700;font-size:14px}
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<div id="app"><div class="center"><div class="spin"></div></div></div>
+<div id="sheet"></div>
+<div id="toast"></div>
+<div id="poster-host"></div>
+<script>/* qrcode-generator 1.4.4 (MIT, Kazuhiko Arase) */
+var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],f={},c=function(t,r){o=function(t){for(var r=new Array(t),e=0;e<t;e+=1){r[e]=new Array(t);for(var n=0;n<t;n+=1)r[e][n]=null}return r}(i=4*e+17),l(0,0),l(i-7,0),l(0,i-7),s(),h(),d(t,r),e>=7&&v(t),null==a&&(a=p(e,n,u)),w(a,r)},l=function(t,r){for(var e=-1;e<=7;e+=1)if(!(t+e<=-1||i<=t+e))for(var n=-1;n<=7;n+=1)r+n<=-1||i<=r+n||(o[t+e][r+n]=0<=e&&e<=6&&(0==n||6==n)||0<=n&&n<=6&&(0==e||6==e)||2<=e&&e<=4&&2<=n&&n<=4)},h=function(){for(var t=8;t<i-8;t+=1)null==o[t][6]&&(o[t][6]=t%2==0);for(var r=8;r<i-8;r+=1)null==o[6][r]&&(o[6][r]=r%2==0)},s=function(){for(var t=B.getPatternPosition(e),r=0;r<t.length;r+=1)for(var n=0;n<t.length;n+=1){var i=t[r],a=t[n];if(null==o[i][a])for(var u=-2;u<=2;u+=1)for(var f=-2;f<=2;f+=1)o[i+u][a+f]=-2==u||2==u||-2==f||2==f||0==u&&0==f}},v=function(t){for(var r=B.getBCHTypeNumber(e),n=0;n<18;n+=1){var a=!t&&1==(r>>n&1);o[Math.floor(n/3)][n%3+i-8-3]=a}for(n=0;n<18;n+=1){a=!t&&1==(r>>n&1);o[n%3+i-8-3][Math.floor(n/3)]=a}},d=function(t,r){for(var e=n<<3|r,a=B.getBCHTypeInfo(e),u=0;u<15;u+=1){var f=!t&&1==(a>>u&1);u<6?o[u][8]=f:u<8?o[u+1][8]=f:o[i-15+u][8]=f}for(u=0;u<15;u+=1){f=!t&&1==(a>>u&1);u<8?o[8][i-u-1]=f:u<9?o[8][15-u-1+1]=f:o[8][15-u-1]=f}o[i-8][8]=!t},w=function(t,r){for(var e=-1,n=i-1,a=7,u=0,f=B.getMaskFunction(r),c=i-1;c>0;c-=2)for(6==c&&(c-=1);;){for(var g=0;g<2;g+=1)if(null==o[n][c-g]){var l=!1;u<t.length&&(l=1==(t[u]>>>a&1)),f(n,c-g)&&(l=!l),o[n][c-g]=l,-1==(a-=1)&&(u+=1,a=7)}if((n+=e)<0||i<=n){n-=e,e=-e;break}}},p=function(t,r,e){for(var n=A.getRSBlocks(t,r),o=b(),i=0;i<e.length;i+=1){var a=e[i];o.put(a.getMode(),4),o.put(a.getLength(),B.getLengthInBits(a.getMode(),t)),a.write(o)}var u=0;for(i=0;i<n.length;i+=1)u+=n[i].dataCount;if(o.getLengthInBits()>8*u)throw"code length overflow. ("+o.getLengthInBits()+">"+8*u+")";for(o.getLengthInBits()+4<=8*u&&o.put(0,4);o.getLengthInBits()%8!=0;)o.putBit(!1);for(;!(o.getLengthInBits()>=8*u||(o.put(236,8),o.getLengthInBits()>=8*u));)o.put(17,8);return function(t,r){for(var e=0,n=0,o=0,i=new Array(r.length),a=new Array(r.length),u=0;u<r.length;u+=1){var f=r[u].dataCount,c=r[u].totalCount-f;n=Math.max(n,f),o=Math.max(o,c),i[u]=new Array(f);for(var g=0;g<i[u].length;g+=1)i[u][g]=255&t.getBuffer()[g+e];e+=f;var l=B.getErrorCorrectPolynomial(c),h=k(i[u],l.getLength()-1).mod(l);for(a[u]=new Array(l.getLength()-1),g=0;g<a[u].length;g+=1){var s=g+h.getLength()-a[u].length;a[u][g]=s>=0?h.getAt(s):0}}var v=0;for(g=0;g<r.length;g+=1)v+=r[g].totalCount;var d=new Array(v),w=0;for(g=0;g<n;g+=1)for(u=0;u<r.length;u+=1)g<i[u].length&&(d[w]=i[u][g],w+=1);for(g=0;g<o;g+=1)for(u=0;u<r.length;u+=1)g<a[u].length&&(d[w]=a[u][g],w+=1);return d}(o,n)};f.addData=function(t,r){var e=null;switch(r=r||"Byte"){case"Numeric":e=M(t);break;case"Alphanumeric":e=x(t);break;case"Byte":e=m(t);break;case"Kanji":e=L(t);break;default:throw"mode:"+r}u.push(e),a=null},f.isDark=function(t,r){if(t<0||i<=t||r<0||i<=r)throw t+","+r;return o[t][r]},f.getModuleCount=function(){return i},f.make=function(){if(e<1){for(var t=1;t<40;t++){for(var r=A.getRSBlocks(t,n),o=b(),i=0;i<u.length;i++){var a=u[i];o.put(a.getMode(),4),o.put(a.getLength(),B.getLengthInBits(a.getMode(),t)),a.write(o)}var g=0;for(i=0;i<r.length;i++)g+=r[i].dataCount;if(o.getLengthInBits()<=8*g)break}e=t}c(!1,function(){for(var t=0,r=0,e=0;e<8;e+=1){c(!0,e);var n=B.getLostPoint(f);(0==e||t>n)&&(t=n,r=e)}return r}())},f.createTableTag=function(t,r){t=t||2;var e="";e+='<table style="',e+=" border-width: 0px; border-style: none;",e+=" border-collapse: collapse;",e+=" padding: 0px; margin: "+(r=void 0===r?4*t:r)+"px;",e+='">',e+="<tbody>";for(var n=0;n<f.getModuleCount();n+=1){e+="<tr>";for(var o=0;o<f.getModuleCount();o+=1)e+='<td style="',e+=" border-width: 0px; border-style: none;",e+=" border-collapse: collapse;",e+=" padding: 0px; margin: 0px;",e+=" width: "+t+"px;",e+=" height: "+t+"px;",e+=" background-color: ",e+=f.isDark(n,o)?"#000000":"#ffffff",e+=";",e+='"/>';e+="</tr>"}return e+="</tbody>",e+="</table>"},f.createSvgTag=function(t,r,e,n){var o={};"object"==typeof arguments[0]&&(t=(o=arguments[0]).cellSize,r=o.margin,e=o.alt,n=o.title),t=t||2,r=void 0===r?4*t:r,(e="string"==typeof e?{text:e}:e||{}).text=e.text||null,e.id=e.text?e.id||"qrcode-description":null,(n="string"==typeof n?{text:n}:n||{}).text=n.text||null,n.id=n.text?n.id||"qrcode-title":null;var i,a,u,c,g=f.getModuleCount()*t+2*r,l="";for(c="l"+t+",0 0,"+t+" -"+t+",0 0,-"+t+"z ",l+='<svg version="1.1" xmlns="http://www.w3.org/2000/svg"',l+=o.scalable?"":' width="'+g+'px" height="'+g+'px"',l+=' viewBox="0 0 '+g+" "+g+'" ',l+=' preserveAspectRatio="xMinYMin meet"',l+=n.text||e.text?' role="img" aria-labelledby="'+y([n.id,e.id].join(" ").trim())+'"':"",l+=">",l+=n.text?'<title id="'+y(n.id)+'">'+y(n.text)+"</title>":"",l+=e.text?'<description id="'+y(e.id)+'">'+y(e.text)+"</description>":"",l+='<rect width="100%" height="100%" fill="white" cx="0" cy="0"/>',l+='<path d="',a=0;a<f.getModuleCount();a+=1)for(u=a*t+r,i=0;i<f.getModuleCount();i+=1)f.isDark(a,i)&&(l+="M"+(i*t+r)+","+u+c);return l+='" stroke="transparent" fill="black"/>',l+="</svg>"},f.createDataURL=function(t,r){t=t||2,r=void 0===r?4*t:r;var e=f.getModuleCount()*t+2*r,n=r,o=e-r;return I(e,e,function(r,e){if(n<=r&&r<o&&n<=e&&e<o){var i=Math.floor((r-n)/t),a=Math.floor((e-n)/t);return f.isDark(a,i)?0:1}return 1})},f.createImgTag=function(t,r,e){t=t||2,r=void 0===r?4*t:r;var n=f.getModuleCount()*t+2*r,o="";return o+="<img",o+=' src="',o+=f.createDataURL(t,r),o+='"',o+=' width="',o+=n,o+='"',o+=' height="',o+=n,o+='"',e&&(o+=' alt="',o+=y(e),o+='"'),o+="/>"};var y=function(t){for(var r="",e=0;e<t.length;e+=1){var n=t.charAt(e);switch(n){case"<":r+="&lt;";break;case">":r+="&gt;";break;case"&":r+="&amp;";break;case'"':r+="&quot;";break;default:r+=n}}return r};return f.createASCII=function(t,r){if((t=t||1)<2)return function(t){t=void 0===t?2:t;var r,e,n,o,i,a=1*f.getModuleCount()+2*t,u=t,c=a-t,g={"██":"█","█ ":"▀"," █":"▄","  ":" "},l={"██":"▀","█ ":"▀"," █":" ","  ":" "},h="";for(r=0;r<a;r+=2){for(n=Math.floor((r-u)/1),o=Math.floor((r+1-u)/1),e=0;e<a;e+=1)i="█",u<=e&&e<c&&u<=r&&r<c&&f.isDark(n,Math.floor((e-u)/1))&&(i=" "),u<=e&&e<c&&u<=r+1&&r+1<c&&f.isDark(o,Math.floor((e-u)/1))?i+=" ":i+="█",h+=t<1&&r+1>=c?l[i]:g[i];h+="\n"}return a%2&&t>0?h.substring(0,h.length-a-1)+Array(a+1).join("▀"):h.substring(0,h.length-1)}(r);t-=1,r=void 0===r?2*t:r;var e,n,o,i,a=f.getModuleCount()*t+2*r,u=r,c=a-r,g=Array(t+1).join("██"),l=Array(t+1).join("  "),h="",s="";for(e=0;e<a;e+=1){for(o=Math.floor((e-u)/t),s="",n=0;n<a;n+=1)i=1,u<=n&&n<c&&u<=e&&e<c&&f.isDark(o,Math.floor((n-u)/t))&&(i=0),s+=i?g:l;for(o=0;o<t;o+=1)h+=s+"\n"}return h.substring(0,h.length-1)},f.renderTo2dContext=function(t,r){r=r||2;for(var e=f.getModuleCount(),n=0;n<e;n++)for(var o=0;o<e;o++)t.fillStyle=f.isDark(n,o)?"black":"white",t.fillRect(n*r,o*r,r,r)},f};t.stringToBytes=(t.stringToBytesFuncs={default:function(t){for(var r=[],e=0;e<t.length;e+=1){var n=t.charCodeAt(e);r.push(255&n)}return r}}).default,t.createStringToBytes=function(t,r){var e=function(){for(var e=S(t),n=function(){var t=e.read();if(-1==t)throw"eof";return t},o=0,i={};;){var a=e.read();if(-1==a)break;var u=n(),f=n()<<8|n();i[String.fromCharCode(a<<8|u)]=f,o+=1}if(o!=r)throw o+" != "+r;return i}(),n="?".charCodeAt(0);return function(t){for(var r=[],o=0;o<t.length;o+=1){var i=t.charCodeAt(o);if(i<128)r.push(i);else{var a=e[t.charAt(o)];"number"==typeof a?(255&a)==a?r.push(a):(r.push(a>>>8),r.push(255&a)):r.push(n)}}return r}};var r,e,n,o,i,a=1,u=2,f=4,c=8,g={L:1,M:0,Q:3,H:2},l=0,h=1,s=2,v=3,d=4,w=5,p=6,y=7,B=(r=[[],[6,18],[6,22],[6,26],[6,30],[6,34],[6,22,38],[6,24,42],[6,26,46],[6,28,50],[6,30,54],[6,32,58],[6,34,62],[6,26,46,66],[6,26,48,70],[6,26,50,74],[6,30,54,78],[6,30,56,82],[6,30,58,86],[6,34,62,90],[6,28,50,72,94],[6,26,50,74,98],[6,30,54,78,102],[6,28,54,80,106],[6,32,58,84,110],[6,30,58,86,114],[6,34,62,90,118],[6,26,50,74,98,122],[6,30,54,78,102,126],[6,26,52,78,104,130],[6,30,56,82,108,134],[6,34,60,86,112,138],[6,30,58,86,114,142],[6,34,62,90,118,146],[6,30,54,78,102,126,150],[6,24,50,76,102,128,154],[6,28,54,80,106,132,158],[6,32,58,84,110,136,162],[6,26,54,82,110,138,166],[6,30,58,86,114,142,170]],e=1335,n=7973,i=function(t){for(var r=0;0!=t;)r+=1,t>>>=1;return r},(o={}).getBCHTypeInfo=function(t){for(var r=t<<10;i(r)-i(e)>=0;)r^=e<<i(r)-i(e);return 21522^(t<<10|r)},o.getBCHTypeNumber=function(t){for(var r=t<<12;i(r)-i(n)>=0;)r^=n<<i(r)-i(n);return t<<12|r},o.getPatternPosition=function(t){return r[t-1]},o.getMaskFunction=function(t){switch(t){case l:return function(t,r){return(t+r)%2==0};case h:return function(t,r){return t%2==0};case s:return function(t,r){return r%3==0};case v:return function(t,r){return(t+r)%3==0};case d:return function(t,r){return(Math.floor(t/2)+Math.floor(r/3))%2==0};case w:return function(t,r){return t*r%2+t*r%3==0};case p:return function(t,r){return(t*r%2+t*r%3)%2==0};case y:return function(t,r){return(t*r%3+(t+r)%2)%2==0};default:throw"bad maskPattern:"+t}},o.getErrorCorrectPolynomial=function(t){for(var r=k([1],0),e=0;e<t;e+=1)r=r.multiply(k([1,C.gexp(e)],0));return r},o.getLengthInBits=function(t,r){if(1<=r&&r<10)switch(t){case a:return 10;case u:return 9;case f:case c:return 8;default:throw"mode:"+t}else if(r<27)switch(t){case a:return 12;case u:return 11;case f:return 16;case c:return 10;default:throw"mode:"+t}else{if(!(r<41))throw"type:"+r;switch(t){case a:return 14;case u:return 13;case f:return 16;case c:return 12;default:throw"mode:"+t}}},o.getLostPoint=function(t){for(var r=t.getModuleCount(),e=0,n=0;n<r;n+=1)for(var o=0;o<r;o+=1){for(var i=0,a=t.isDark(n,o),u=-1;u<=1;u+=1)if(!(n+u<0||r<=n+u))for(var f=-1;f<=1;f+=1)o+f<0||r<=o+f||0==u&&0==f||a==t.isDark(n+u,o+f)&&(i+=1);i>5&&(e+=3+i-5)}for(n=0;n<r-1;n+=1)for(o=0;o<r-1;o+=1){var c=0;t.isDark(n,o)&&(c+=1),t.isDark(n+1,o)&&(c+=1),t.isDark(n,o+1)&&(c+=1),t.isDark(n+1,o+1)&&(c+=1),0!=c&&4!=c||(e+=3)}for(n=0;n<r;n+=1)for(o=0;o<r-6;o+=1)t.isDark(n,o)&&!t.isDark(n,o+1)&&t.isDark(n,o+2)&&t.isDark(n,o+3)&&t.isDark(n,o+4)&&!t.isDark(n,o+5)&&t.isDark(n,o+6)&&(e+=40);for(o=0;o<r;o+=1)for(n=0;n<r-6;n+=1)t.isDark(n,o)&&!t.isDark(n+1,o)&&t.isDark(n+2,o)&&t.isDark(n+3,o)&&t.isDark(n+4,o)&&!t.isDark(n+5,o)&&t.isDark(n+6,o)&&(e+=40);var g=0;for(o=0;o<r;o+=1)for(n=0;n<r;n+=1)t.isDark(n,o)&&(g+=1);return e+=Math.abs(100*g/r/r-50)/5*10},o),C=function(){for(var t=new Array(256),r=new Array(256),e=0;e<8;e+=1)t[e]=1<<e;for(e=8;e<256;e+=1)t[e]=t[e-4]^t[e-5]^t[e-6]^t[e-8];for(e=0;e<255;e+=1)r[t[e]]=e;var n={glog:function(t){if(t<1)throw"glog("+t+")";return r[t]},gexp:function(r){for(;r<0;)r+=255;for(;r>=256;)r-=255;return t[r]}};return n}();function k(t,r){if(void 0===t.length)throw t.length+"/"+r;var e=function(){for(var e=0;e<t.length&&0==t[e];)e+=1;for(var n=new Array(t.length-e+r),o=0;o<t.length-e;o+=1)n[o]=t[o+e];return n}(),n={getAt:function(t){return e[t]},getLength:function(){return e.length},multiply:function(t){for(var r=new Array(n.getLength()+t.getLength()-1),e=0;e<n.getLength();e+=1)for(var o=0;o<t.getLength();o+=1)r[e+o]^=C.gexp(C.glog(n.getAt(e))+C.glog(t.getAt(o)));return k(r,0)},mod:function(t){if(n.getLength()-t.getLength()<0)return n;for(var r=C.glog(n.getAt(0))-C.glog(t.getAt(0)),e=new Array(n.getLength()),o=0;o<n.getLength();o+=1)e[o]=n.getAt(o);for(o=0;o<t.getLength();o+=1)e[o]^=C.gexp(C.glog(t.getAt(o))+r);return k(e,0).mod(t)}};return n}var A=function(){var t=[[1,26,19],[1,26,16],[1,26,13],[1,26,9],[1,44,34],[1,44,28],[1,44,22],[1,44,16],[1,70,55],[1,70,44],[2,35,17],[2,35,13],[1,100,80],[2,50,32],[2,50,24],[4,25,9],[1,134,108],[2,67,43],[2,33,15,2,34,16],[2,33,11,2,34,12],[2,86,68],[4,43,27],[4,43,19],[4,43,15],[2,98,78],[4,49,31],[2,32,14,4,33,15],[4,39,13,1,40,14],[2,121,97],[2,60,38,2,61,39],[4,40,18,2,41,19],[4,40,14,2,41,15],[2,146,116],[3,58,36,2,59,37],[4,36,16,4,37,17],[4,36,12,4,37,13],[2,86,68,2,87,69],[4,69,43,1,70,44],[6,43,19,2,44,20],[6,43,15,2,44,16],[4,101,81],[1,80,50,4,81,51],[4,50,22,4,51,23],[3,36,12,8,37,13],[2,116,92,2,117,93],[6,58,36,2,59,37],[4,46,20,6,47,21],[7,42,14,4,43,15],[4,133,107],[8,59,37,1,60,38],[8,44,20,4,45,21],[12,33,11,4,34,12],[3,145,115,1,146,116],[4,64,40,5,65,41],[11,36,16,5,37,17],[11,36,12,5,37,13],[5,109,87,1,110,88],[5,65,41,5,66,42],[5,54,24,7,55,25],[11,36,12,7,37,13],[5,122,98,1,123,99],[7,73,45,3,74,46],[15,43,19,2,44,20],[3,45,15,13,46,16],[1,135,107,5,136,108],[10,74,46,1,75,47],[1,50,22,15,51,23],[2,42,14,17,43,15],[5,150,120,1,151,121],[9,69,43,4,70,44],[17,50,22,1,51,23],[2,42,14,19,43,15],[3,141,113,4,142,114],[3,70,44,11,71,45],[17,47,21,4,48,22],[9,39,13,16,40,14],[3,135,107,5,136,108],[3,67,41,13,68,42],[15,54,24,5,55,25],[15,43,15,10,44,16],[4,144,116,4,145,117],[17,68,42],[17,50,22,6,51,23],[19,46,16,6,47,17],[2,139,111,7,140,112],[17,74,46],[7,54,24,16,55,25],[34,37,13],[4,151,121,5,152,122],[4,75,47,14,76,48],[11,54,24,14,55,25],[16,45,15,14,46,16],[6,147,117,4,148,118],[6,73,45,14,74,46],[11,54,24,16,55,25],[30,46,16,2,47,17],[8,132,106,4,133,107],[8,75,47,13,76,48],[7,54,24,22,55,25],[22,45,15,13,46,16],[10,142,114,2,143,115],[19,74,46,4,75,47],[28,50,22,6,51,23],[33,46,16,4,47,17],[8,152,122,4,153,123],[22,73,45,3,74,46],[8,53,23,26,54,24],[12,45,15,28,46,16],[3,147,117,10,148,118],[3,73,45,23,74,46],[4,54,24,31,55,25],[11,45,15,31,46,16],[7,146,116,7,147,117],[21,73,45,7,74,46],[1,53,23,37,54,24],[19,45,15,26,46,16],[5,145,115,10,146,116],[19,75,47,10,76,48],[15,54,24,25,55,25],[23,45,15,25,46,16],[13,145,115,3,146,116],[2,74,46,29,75,47],[42,54,24,1,55,25],[23,45,15,28,46,16],[17,145,115],[10,74,46,23,75,47],[10,54,24,35,55,25],[19,45,15,35,46,16],[17,145,115,1,146,116],[14,74,46,21,75,47],[29,54,24,19,55,25],[11,45,15,46,46,16],[13,145,115,6,146,116],[14,74,46,23,75,47],[44,54,24,7,55,25],[59,46,16,1,47,17],[12,151,121,7,152,122],[12,75,47,26,76,48],[39,54,24,14,55,25],[22,45,15,41,46,16],[6,151,121,14,152,122],[6,75,47,34,76,48],[46,54,24,10,55,25],[2,45,15,64,46,16],[17,152,122,4,153,123],[29,74,46,14,75,47],[49,54,24,10,55,25],[24,45,15,46,46,16],[4,152,122,18,153,123],[13,74,46,32,75,47],[48,54,24,14,55,25],[42,45,15,32,46,16],[20,147,117,4,148,118],[40,75,47,7,76,48],[43,54,24,22,55,25],[10,45,15,67,46,16],[19,148,118,6,149,119],[18,75,47,31,76,48],[34,54,24,34,55,25],[20,45,15,61,46,16]],r=function(t,r){var e={};return e.totalCount=t,e.dataCount=r,e},e={};return e.getRSBlocks=function(e,n){var o=function(r,e){switch(e){case g.L:return t[4*(r-1)+0];case g.M:return t[4*(r-1)+1];case g.Q:return t[4*(r-1)+2];case g.H:return t[4*(r-1)+3];default:return}}(e,n);if(void 0===o)throw"bad rs block @ typeNumber:"+e+"/errorCorrectionLevel:"+n;for(var i=o.length/3,a=[],u=0;u<i;u+=1)for(var f=o[3*u+0],c=o[3*u+1],l=o[3*u+2],h=0;h<f;h+=1)a.push(r(c,l));return a},e}(),b=function(){var t=[],r=0,e={getBuffer:function(){return t},getAt:function(r){var e=Math.floor(r/8);return 1==(t[e]>>>7-r%8&1)},put:function(t,r){for(var n=0;n<r;n+=1)e.putBit(1==(t>>>r-n-1&1))},getLengthInBits:function(){return r},putBit:function(e){var n=Math.floor(r/8);t.length<=n&&t.push(0),e&&(t[n]|=128>>>r%8),r+=1}};return e},M=function(t){var r=a,e=t,n={getMode:function(){return r},getLength:function(t){return e.length},write:function(t){for(var r=e,n=0;n+2<r.length;)t.put(o(r.substring(n,n+3)),10),n+=3;n<r.length&&(r.length-n==1?t.put(o(r.substring(n,n+1)),4):r.length-n==2&&t.put(o(r.substring(n,n+2)),7))}},o=function(t){for(var r=0,e=0;e<t.length;e+=1)r=10*r+i(t.charAt(e));return r},i=function(t){if("0"<=t&&t<="9")return t.charCodeAt(0)-"0".charCodeAt(0);throw"illegal char :"+t};return n},x=function(t){var r=u,e=t,n={getMode:function(){return r},getLength:function(t){return e.length},write:function(t){for(var r=e,n=0;n+1<r.length;)t.put(45*o(r.charAt(n))+o(r.charAt(n+1)),11),n+=2;n<r.length&&t.put(o(r.charAt(n)),6)}},o=function(t){if("0"<=t&&t<="9")return t.charCodeAt(0)-"0".charCodeAt(0);if("A"<=t&&t<="Z")return t.charCodeAt(0)-"A".charCodeAt(0)+10;switch(t){case" ":return 36;case"$":return 37;case"%":return 38;case"*":return 39;case"+":return 40;case"-":return 41;case".":return 42;case"/":return 43;case":":return 44;default:throw"illegal char :"+t}};return n},m=function(r){var e=f,n=t.stringToBytes(r),o={getMode:function(){return e},getLength:function(t){return n.length},write:function(t){for(var r=0;r<n.length;r+=1)t.put(n[r],8)}};return o},L=function(r){var e=c,n=t.stringToBytesFuncs.SJIS;if(!n)throw"sjis not supported.";!function(){var t=n("友");if(2!=t.length||38726!=(t[0]<<8|t[1]))throw"sjis not supported."}();var o=n(r),i={getMode:function(){return e},getLength:function(t){return~~(o.length/2)},write:function(t){for(var r=o,e=0;e+1<r.length;){var n=(255&r[e])<<8|255&r[e+1];if(33088<=n&&n<=40956)n-=33088;else{if(!(57408<=n&&n<=60351))throw"illegal char at "+(e+1)+"/"+n;n-=49472}n=192*(n>>>8&255)+(255&n),t.put(n,13),e+=2}if(e<r.length)throw"illegal char at "+(e+1)}};return i},D=function(){var t=[],r={writeByte:function(r){t.push(255&r)},writeShort:function(t){r.writeByte(t),r.writeByte(t>>>8)},writeBytes:function(t,e,n){e=e||0,n=n||t.length;for(var o=0;o<n;o+=1)r.writeByte(t[o+e])},writeString:function(t){for(var e=0;e<t.length;e+=1)r.writeByte(t.charCodeAt(e))},toByteArray:function(){return t},toString:function(){var r="";r+="[";for(var e=0;e<t.length;e+=1)e>0&&(r+=","),r+=t[e];return r+="]"}};return r},S=function(t){var r=t,e=0,n=0,o=0,i={read:function(){for(;o<8;){if(e>=r.length){if(0==o)return-1;throw"unexpected end of file./"+o}var t=r.charAt(e);if(e+=1,"="==t)return o=0,-1;t.match(/^\s$/)||(n=n<<6|a(t.charCodeAt(0)),o+=6)}var i=n>>>o-8&255;return o-=8,i}},a=function(t){if(65<=t&&t<=90)return t-65;if(97<=t&&t<=122)return t-97+26;if(48<=t&&t<=57)return t-48+52;if(43==t)return 62;if(47==t)return 63;throw"c:"+t};return i},I=function(t,r,e){for(var n=function(t,r){var e=t,n=r,o=new Array(t*r),i={setPixel:function(t,r,n){o[r*e+t]=n},write:function(t){t.writeString("GIF87a"),t.writeShort(e),t.writeShort(n),t.writeByte(128),t.writeByte(0),t.writeByte(0),t.writeByte(0),t.writeByte(0),t.writeByte(0),t.writeByte(255),t.writeByte(255),t.writeByte(255),t.writeString(","),t.writeShort(0),t.writeShort(0),t.writeShort(e),t.writeShort(n),t.writeByte(0);var r=a(2);t.writeByte(2);for(var o=0;r.length-o>255;)t.writeByte(255),t.writeBytes(r,o,255),o+=255;t.writeByte(r.length-o),t.writeBytes(r,o,r.length-o),t.writeByte(0),t.writeString(";")}},a=function(t){for(var r=1<<t,e=1+(1<<t),n=t+1,i=u(),a=0;a<r;a+=1)i.add(String.fromCharCode(a));i.add(String.fromCharCode(r)),i.add(String.fromCharCode(e));var f,c,g,l=D(),h=(f=l,c=0,g=0,{write:function(t,r){if(t>>>r!=0)throw"length over";for(;c+r>=8;)f.writeByte(255&(t<<c|g)),r-=8-c,t>>>=8-c,g=0,c=0;g|=t<<c,c+=r},flush:function(){c>0&&f.writeByte(g)}});h.write(r,n);var s=0,v=String.fromCharCode(o[s]);for(s+=1;s<o.length;){var d=String.fromCharCode(o[s]);s+=1,i.contains(v+d)?v+=d:(h.write(i.indexOf(v),n),i.size()<4095&&(i.size()==1<<n&&(n+=1),i.add(v+d)),v=d)}return h.write(i.indexOf(v),n),h.write(e,n),h.flush(),l.toByteArray()},u=function(){var t={},r=0,e={add:function(n){if(e.contains(n))throw"dup key:"+n;t[n]=r,r+=1},size:function(){return r},indexOf:function(r){return t[r]},contains:function(r){return void 0!==t[r]}};return e};return i}(t,r),o=0;o<r;o+=1)for(var i=0;i<t;i+=1)n.setPixel(i,o,e(i,o));var a=D();n.write(a);for(var u=function(){var t=0,r=0,e=0,n="",o={},i=function(t){n+=String.fromCharCode(a(63&t))},a=function(t){if(t<0);else{if(t<26)return 65+t;if(t<52)return t-26+97;if(t<62)return t-52+48;if(62==t)return 43;if(63==t)return 47}throw"n:"+t};return o.writeByte=function(n){for(t=t<<8|255&n,r+=8,e+=1;r>=6;)i(t>>>r-6),r-=6},o.flush=function(){if(r>0&&(i(t<<6-r),t=0,r=0),e%3!=0)for(var o=3-e%3,a=0;a<o;a+=1)n+="="},o.toString=function(){return n},o}(),f=a.toByteArray(),c=0;c<f.length;c+=1)u.writeByte(f[c]);return u.flush(),"data:image/gif;base64,"+u};return t}();qrcode.stringToBytesFuncs["UTF-8"]=function(t){return function(t){for(var r=[],e=0;e<t.length;e++){var n=t.charCodeAt(e);n<128?r.push(n):n<2048?r.push(192|n>>6,128|63&n):n<55296||n>=57344?r.push(224|n>>12,128|n>>6&63,128|63&n):(e++,n=65536+((1023&n)<<10|1023&t.charCodeAt(e)),r.push(240|n>>18,128|n>>12&63,128|n>>6&63,128|63&n))}return r}(t)},function(t){"function"==typeof define&&define.amd?define([],t):"object"==typeof exports&&(module.exports=t())}(function(){return qrcode});
+</script>
+<script>
+/* ======== SOZLASH: Apps Script Web App URL manzilini shu yerga qo'ying ======== */
+const API_URL = 'https://script.google.com/macros/s/AKfycby2c_cJHRXyU9NghPrphMZ5D6Yjb6TKERQS62WireAhip8x7JI0cVIzZYn-bAHAYAEs3g/exec';
+/* ============================================================================ */
+
+const tg = window.Telegram && Telegram.WebApp;
+const S = { d: null, mode: null, tab: 'bugun', mf: 'all', clients: null, bookings: null, bf: 'kutilmoqda', report: null, period: 'bugun', dashStale: false, sec: null, team: null, sms: null,
+  cDate: null, cMaster: null, slots: null, pick: null, q: '', A: null, aTab: 'stat', aF: 'all', aQ: '', hist: null, admins: null };
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const fmt = n => String(Math.round(+n || 0)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+const som = n => fmt(n) + ' so‘m';
+const OY = ['yanvar', 'fevral', 'mart', 'aprel', 'may', 'iyun', 'iyul', 'avgust', 'sentabr', 'oktabr', 'noyabr', 'dekabr'];
+const HF = ['Yak', 'Dush', 'Sesh', 'Chor', 'Pay', 'Jum', 'Shan'];
+const fd = d => { const p = String(d).split('-'); return +p[2] + '-' + OY[+p[1] - 1]; };
+const addD = (d, n) => { const p = d.split('-').map(Number); return new Date(Date.UTC(p[0], p[1] - 1, p[2] + n)).toISOString().slice(0, 10); };
+const wd = d => { const p = d.split('-').map(Number); return new Date(Date.UTC(p[0], p[1] - 1, p[2])).getUTCDay(); };
+const ini = n => String(n || '?').trim().split(/\s+/).slice(0, 2).map(x => x[0]).join('').toUpperCase();
+const phoneF = p => { const d = String(p || '').replace(/\D/g, ''); return d.length === 12 ? '+' + d.slice(0, 3) + ' ' + d.slice(3, 5) + ' ' + d.slice(5, 8) + ' ' + d.slice(8, 10) + ' ' + d.slice(10) : String(p || ''); };
+const digits = s => String(s || '').replace(/\D/g, '');
+const haptic = t => { try { tg.HapticFeedback.notificationOccurred(t); } catch (e) { } };
+const val = id => ($('#' + id) || {}).value || '';
+const picked = g => { const b = document.querySelector('#' + g + ' .on'); return b ? b.dataset.v : ''; };
+
+const P = {
+  home: '<path d="M4 11 12 4l8 7v8a1 1 0 0 1-1 1h-4v-6h-6v6H5a1 1 0 0 1-1-1z"/>',
+  cal: '<rect x="4" y="5" width="16" height="16" rx="2"/><path d="M16 3v4M8 3v4M4 11h16"/>',
+  users: '<circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M16 4.5a3.5 3.5 0 0 1 0 7M21 20c0-2.6-1.6-4.8-4-5.6"/>',
+  chart: '<path d="M4 20V10M10 20V4M16 20v-7M21 20H3"/>',
+  grid: '<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>',
+  crown: '<path d="M4 18h16M5 15 4 7l5 4 3-6 3 6 5-4-1 8z"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  phone: '<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/>',
+  pin: '<path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>',
+  trash: '<path d="M4 7h16M10 11v6M14 11v6M5 7l1 13h12l1-13M9 7V4h6v3"/>',
+  sc: '<circle cx="6" cy="7" r="3"/><circle cx="6" cy="17" r="3"/><path d="M8.6 8.6 20 18M8.6 15.4 20 6"/>',
+  cash: '<rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/>',
+  card: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h3"/>',
+  debt: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  scan: '<path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2M7 12h10"/>',
+  send: '<path d="M21 3 3 10.5l7 2.5 2.5 7z"/><path d="m21 3-11 10"/>',
+  check: '<rect x="4" y="5" width="16" height="16" rx="2"/><path d="M16 3v4M8 3v4M4 11h16M9 16l2 2 4-4"/>',
+  tgm: '<path d="M21 4 3 11l6 2 2 6 3-4 5 4z"/>',
+  refresh: '<path d="M20 11a8 8 0 1 0-2.3 5.7M20 5v6h-6"/>',
+  lock: '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
+  user: '<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/>',
+  sms: '<path d="M4 5h16v11H8l-4 4z"/><path d="M8 10h8M8 13h5"/>',
+  mega: '<path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1zM15 9a3 3 0 0 1 0 6M18 6a7 7 0 0 1 0 12"/>',
+  shop: '<path d="M4 9h16l-1-4H5zM5 9v11h14V9M9 20v-6h6v6"/>',
+  gear: '<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/>',
+  chev: '<path d="m9 6 6 6-6 6"/>',
+  shield: '<path d="M12 3 5 6v6c0 4.4 3 7.6 7 9 4-1.4 7-4.6 7-9V6z"/>',
+  money: '<path d="M12 3v18M17 7H9.5a3 3 0 0 0 0 6h5a3 3 0 0 1 0 6H6"/>',
+  ban: '<circle cx="12" cy="12" r="9"/><path d="m5.6 5.6 12.8 12.8"/>'
+};
+const MASCOT = sz => `<svg width="${sz}" height="${sz}" viewBox="0 0 120 120" aria-hidden="true"><path d="M20 120 C22 98 38 89 60 89 C82 89 98 98 100 120 Z" fill="#1D5FE0"/><path d="M49 89 L60 101 L71 89 Z" fill="#FFFFFF"/><rect x="52" y="74" width="16" height="17" rx="6" fill="#F4CFAE"/><ellipse cx="60" cy="57" rx="24" ry="27" fill="#F4CFAE"/><path d="M35 54 C31 31 45 19 62 21 C78 17 94 27 89 45 C88 50 85 53 85 53 C81 41 71 37 60 39 C49 41 40 43 37 55 Z" fill="#0B1B3F"/><path d="M47 58 q4.5 -4.5 9 0 M64 58 q4.5 -4.5 9 0" fill="none" stroke="#0B1B3F" stroke-width="2.8" stroke-linecap="round"/><path d="M60 69 C55 65 47 65 43 70 C47 73 52 74 56 73 C58 72 59 71 60 71 C61 71 62 72 64 73 C68 74 73 73 77 70 C73 65 65 65 60 69 Z" fill="#0B1B3F"/></svg>`;
+const I = (n, s = 20, c = 'currentColor') => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${P[n]}</svg>`;
+
+/* ---------- umumiy ---------- */
+function toast(t, bad) { $('#toast').innerHTML = `<div class="${bad ? 'bad' : ''}">${esc(t)}</div>`; clearTimeout(toast.t); toast.t = setTimeout(() => $('#toast').innerHTML = '', 3000); }
+function busy(on) { $('#bar').className = on ? 'on' : ''; if (!on) { $('#bar').style.width = '100%'; setTimeout(() => $('#bar').style.width = '', 250); } }
+const ERR = { net: 'Internet aloqasini tekshiring', auth: 'Ilovani botdagi tugma orqali qayta oching', role: 'Ruxsat yo‘q', server: 'Serverda xatolik. Birozdan keyin urinib ko‘ring', busy: 'Bu vaqt band', action: 'Noma’lum amal', obuna: 'Obuna muddati tugagan' };
+function fail(e, errId) {
+  const t = (e && e.msg) || ERR[e && e.error] || 'Xatolik yuz berdi';
+  haptic('error');
+  if (errId && $('#' + errId)) $('#' + errId).textContent = t; else toast(t, true);
+}
+async function api(action, data = {}, quiet) {
+  if (!quiet) busy(true);
+  try {
+    let r, j;
+    try { r = await fetch(API_URL, { method: 'POST', body: JSON.stringify(Object.assign({ action, initData: tg.initData }, data)) }); } catch (x) { throw { error: 'net' }; }
+    try { j = await r.json(); } catch (x) { throw { error: 'server' }; }
+    if (j.error === 'obuna' && action !== 'me') { S.d = await api('me', {}, true); render(); }
+    if (j.error) throw j;
+    return j;
+  } finally { if (!quiet) busy(false); }
+}
+function confirmBox(text) { return new Promise(res => { try { tg.showConfirm(text, ok => res(!!ok)); } catch (e) { res(confirm(text)); } }); }
+function openSheet(html) {
+  $('#sheet').innerHTML = `<div class="sh-bg" data-a="closeSheet"></div><div class="sh" role="dialog"><div class="sh-h"></div>${html}</div>`;
+  $('#sheet').classList.add('on'); try { tg.BackButton.show(); } catch (e) { }
+}
+function closeSheet() {
+  if ($('#sheet').classList.contains('on')) { $('#sheet').classList.remove('on'); $('#sheet').innerHTML = ''; }
+  else if (S.sec) { S.sec = null; renderTab(); }
+  try { if (!S.sec) tg.BackButton.hide(); } catch (e) { }
+}
+function screen(icon, title, text, btn) { $('#app').innerHTML = `<div class="center"><div class="big">${I(icon, 34)}</div><h3>${title}</h3><p>${text}</p>${btn || ''}</div>`; }
+const loader = () => `<div style="display:flex;justify-content:center;padding:60px 0"><div class="spin"></div></div>`;
+const met = (ic, l, v) => `<div class="met"><span>${I(ic, 15)}${l}</span><b>${v}</b></div>`;
+const PAY = { naqd: ['Naqd', 'ok'], karta: ['Karta', ''], nasiya: ['Nasiya', 'warn'] };
+const BST = { kutilmoqda: ['Kutilmoqda', 'warn'], tasdiqlandi: ['Tasdiqlangan', 'ok'], rad: ['Rad etilgan', 'bad'], bekor: ['Bekor qilingan', 'gray'], keldi: ['Keldi', ''] };
+const TFC = { start: 'gray', standart: '', biznes: 'pro' };
+
+/* ---------- ishga tushish ---------- */
+async function boot() {
+  if (!tg || !tg.initData) return screen('lock', 'Telegram orqali oching', 'Bu ilova faqat Telegram bot ichida ishlaydi. Botga kirib, «Ustam CRM» tugmasini bosing.');
+  tg.ready(); tg.expand();
+  try { tg.setHeaderColor('#FFFFFF'); tg.setBackgroundColor('#F5F8FD'); tg.BackButton.onClick(closeSheet); } catch (e) { }
+  const s = new URLSearchParams(location.search).get('s');
+  try { S.d = await api('me', { s }); }
+  catch (e) { return screen('lock', 'Ochilmadi', esc(e.msg || ERR[e.error] || 'Xatolik'), `<button class="btn p" style="flex:none;width:220px" data-a="reload">Qayta urinish</button>`); }
+  S.mode = S.d.role;
+  render();
+}
+function modesBar() {
+  const d = S.d, m = [];
+  if (d.staff) m.push(['staff', 'Ish']);
+  if (d.client) m.push(['client', 'Mijoz']);
+  if (d.admin) m.push(['admin', 'Admin']);
+  return m.length > 1 ? `<div class="modes">${m.map(x => `<button class="${S.mode === x[0] ? 'on' : ''}" data-a="mode" data-v="${x[0]}">${x[1]}</button>`).join('')}</div>` : '';
+}
+function render() {
+  const m = S.mode;
+  if (m === 'staff') return S.d.expired ? renderExpired() : renderStaff();
+  if (m === 'client') return renderClient();
+  if (m === 'admin') return renderAdmin();
+  screen('user', 'Siz hali ro‘yxatdan o‘tmagansiz',
+    'Sartaroshxonadagi QR kodni telefon kamerasi bilan skanerlang yoki botga sartaroshxona ID raqamini yozing.<br><br>Sartaroshxona egasi bo‘lsangiz, botda <b>/usta</b> buyrug‘ini bosing.',
+    `<button class="btn p" style="flex:none;width:220px" data-a="closeApp">Botga qaytish</button>`);
+}
+
+/* ================= XODIM (usta / egasi / rahbar) ================= */
+const isOwner = () => S.d.staff && S.d.staff.role === 'egasi';
+const isPanel = () => isOwner() && S.d.shop.panel;
+
+function renderExpired() {
+  const d = S.d, c = d.contact || '';
+  const link = isOwner() ? (c.startsWith('@') ? `<button class="btn p" style="flex:none;width:240px" data-a="contact">${I('send', 18)} ${esc(c)} ga yozish</button>` : (c ? `<a class="btn p" style="flex:none;width:240px" href="tel:${esc(c)}">${I('phone', 18)} ${esc(c)}</a>` : '')) : '';
+  $('#app').innerHTML = `<div class="top"><div class="brand"><div class="logo">${MASCOT(36)}</div><div><b>${esc(d.shop.shop)}</b><span>${esc(d.staff.name)}</span></div></div>${modesBar()}</div>
+  <div class="center" style="min-height:70vh"><div class="big">${I('lock', 34)}</div><h3>${d.blocked ? 'Hisob vaqtincha to‘xtatilgan' : 'Obuna muddati tugagan'}</h3>
+  <p>${isOwner() ? `<b>${esc(d.shop.tariffName)}</b> tarifi · oyiga <b>${som(d.shop.tariffPrice)}</b>.<br>Ma’lumotlaringiz saqlanib turibdi. To‘lovdan keyin hammasi qayta ochiladi.` : 'Sartaroshxona egasi obunani yangilashi kerak. Ma’lumotlaringiz saqlanib turibdi.'}</p>${link}</div>`;
+}
+
+function renderStaff() {
+  const d = S.d, s = d.shop, pend = (d.dash && d.dash.pending) || 0;
+  const tabs = [['bugun', 'Bugun', 'home'], ['bron', 'Bronlar', 'cal'], ['mijoz', 'Mijozlar', 'users'], ['hisobot', 'Hisobot', 'chart']];
+  if (isOwner()) tabs.push(['boshqaruv', isPanel() ? 'Rahbar' : 'Boshqaruv', isPanel() ? 'crown' : 'grid']);
+  $('#app').innerHTML = `
+  <div class="top"><div class="brand"><div class="logo">${MASCOT(36)}</div><div><b>${esc(s.shop)}</b><span>${esc(d.staff.name)} · ${isOwner() ? (isPanel() ? 'rahbar' : 'egasi') : 'usta'} · <span class="pill ${TFC[s.tariff]}" style="padding:1px 6px;display:inline">${s.tariffName}</span></span></div></div>
+  ${modesBar() || `<button class="ic" data-a="refresh" aria-label="Yangilash">${I('refresh')}</button>`}</div>
+  <main id="main"></main>
+  <nav class="nav">${tabs.map(t => `<button class="${S.tab === t[0] ? 'on' : ''}" data-a="tab" data-t="${t[0]}">${I(t[2], 22)}${t[1]}${t[0] === 'bron' && pend ? `<i>${pend}</i>` : ''}</button>`).join('')}</nav>`;
+  renderTab();
+}
+function mfChips() {
+  if (!isPanel()) return '';
+  const team = (S.d.shop.masters || []);
+  return `<div class="chips sc" style="margin-bottom:12px"><button class="chip ${S.mf === 'all' ? 'on' : ''}" data-a="mf" data-v="all">Hammasi</button>${team.map(m => `<button class="chip ${S.mf === String(m.id) ? 'on' : ''}" data-a="mf" data-v="${m.id}">${esc(m.name)}</button>`).join('')}</div>`;
+}
+const mfArg = () => isPanel() ? { master: S.mf } : {};
+
+async function renderTab() {
+  const m = $('#main'); if (!m) return;
+  const t = S.tab;
+  if (t === 'bugun') {
+    if (S.dashStale) { S.dashStale = false; try { S.d.dash = await api('u_dash', mfArg()); } catch (e) { fail(e); } }
+    m.innerHTML = mfChips() + tBugun();
+  }
+  if (t === 'bron') {
+    if (!S.bookings) { m.innerHTML = loader(); try { S.bookings = (await api('u_bookings', {}, true)).bookings; } catch (e) { return fail(e); } }
+    m.innerHTML = tBron();
+  }
+  if (t === 'mijoz') {
+    if (!S.clients) { m.innerHTML = loader(); try { S.clients = (await api('u_clients', {}, true)).clients; } catch (e) { return fail(e); } }
+    m.innerHTML = tMijoz(); drawClients();
+  }
+  if (t === 'hisobot') {
+    if (!S.report) { m.innerHTML = loader(); try { S.report = await api('u_report', Object.assign(period(S.period), mfArg()), true); } catch (e) { return fail(e); } }
+    m.innerHTML = mfChips() + tHisobot();
+  }
+  if (t === 'boshqaruv') { try { tg.BackButton[S.sec ? 'show' : 'hide'](); } catch (e) { } return renderBosh(m); }
+}
+
+function teamTable(team, total, title) {
+  const rows = team.filter(x => x.works || x.mijozlar);
+  if (!rows.length) return '';
+  return `<h2>${title} <small>${rows.length} usta</small></h2><div class="card" style="padding:6px 10px"><table class="tbl"><tr><th>Usta</th><th class="r">Mijoz</th><th class="r">Tushum</th></tr>
+  ${rows.map(x => `<tr><td>${esc(x.name)}${x.role === 'egasi' ? ' <span class="pill gray">egasi</span>' : ''}</td><td class="r">${x.mijozlar}</td><td class="r">${fmt(x.tushum)}</td></tr>`).join('')}
+  ${total ? `<tr><td><b>Jami</b></td><td class="r"><b>${total.mijozlar}</b></td><td class="r"><b>${fmt(total.tushum)}</b></td></tr>` : ''}</table></div>`;
+}
+
+function tBugun() {
+  const D = S.d.dash, m = D.m, panel = isPanel();
+  const label = panel ? (S.mf === 'all' ? 'Sartaroshxona sof foydasi' : 'Usta sof foydasi') : 'Bugungi sof foydangiz';
+  const canWork = !isOwner() || S.d.staff.works || panel;
+  return `
+  <section class="hero"><div class="hero-l">${label} · ${fd(D.date)}</div><div class="hero-v">${som(m.sof)}</div>
+  <div class="hero-row"><div><span>Tushum</span><b>${som(m.tushum)}</b></div><div><span>Xarajat</span><b>${som(m.xarajat)}</b></div></div></section>
+  <div class="grid">${met('cash', 'Naqd', som(m.naqd))}${met('card', 'Karta', som(m.karta))}${met('debt', 'Nasiya', som(m.nasiya))}${met('users', 'Mijozlar', m.mijozlar + ' ta')}</div>
+  <div class="row2">${canWork ? `<button class="btn p" data-a="visitForm">${I('plus', 20)} Mijoz keldi</button>` : ''}<button class="btn g" style="flex:.7" data-a="expForm">${I('plus', 18)} Xarajat</button></div>
+  ${isOwner() && !panel && D.team ? teamTable(D.team, D.total, 'Jamoa bugun') : ''}
+  ${panel && S.mf === 'all' && D.team ? teamTable(D.team, null, 'Ustalar bo‘yicha') : ''}
+  ${D.bookings.length ? `<h2>Bugungi bronlar <small>${D.bookings.length} ta</small></h2><div class="list">${D.bookings.map(b => `
+    <div class="it"><div class="av" style="font-size:12px">${b.time}</div><div class="mid"><b>${esc(b.name)}</b><span>${phoneF(b.phone)}${panel ? ' · ' + esc(b.masterName) : ''}</span></div>
+    <div class="end">${b.status === 'tasdiqlandi' ? `<button class="btn s ok" data-a="came" data-id="${b.id}">Keldi</button>` : `<span class="pill warn">Kutilmoqda</span>`}</div></div>`).join('')}</div>` : ''}
+  <h2>Bugungi tashriflar <small>${D.visits.length} ta</small></h2>
+  ${D.visits.length ? `<div class="list">${D.visits.map(v => `
+    <div class="it"><div class="av">${esc(ini(v.client))}</div><div class="mid"><b>${esc(v.client)}</b><span>${v.time} · ${esc(v.service)}${panel ? ' · ' + esc(v.masterName) : ''}</span></div>
+    <div class="end"><b>${fmt(v.sum)}</b><span class="pill ${PAY[v.pay][1]}">${PAY[v.pay][0]}${v.pay === 'nasiya' && v.debtPaidAt ? ' ✓' : ''}</span></div>
+    ${isOwner() || String(v.masterId) === String(S.d.staff.id) ? `<button class="ic" data-a="del" data-kind="visit" data-id="${v.id}" aria-label="O‘chirish">${I('trash', 18)}</button>` : ''}</div>`).join('')}</div>`
+      : `<div class="empty">Bugun hali mijoz yo‘q.${canWork ? ' «Mijoz keldi» tugmasini bosing.' : ''}</div>`}
+  ${D.expenses.length ? `<h2>Bugungi xarajatlar</h2><div class="list">${D.expenses.map(x => `
+    <div class="it"><div class="av" style="background:var(--badbg);color:var(--bad)">${I('cash', 18)}</div><div class="mid"><b>${esc(x.name)}</b></div>
+    <div class="end"><b style="color:var(--bad)">−${fmt(x.sum)}</b></div><button class="ic" data-a="del" data-kind="exp" data-id="${x.id}" aria-label="O‘chirish">${I('trash', 18)}</button></div>`).join('')}</div>` : ''}`;
+}
+
+async function visitForm(pre = {}) {
+  const s = S.d.shop, panel = isPanel();
+  const team = s.masters || [];
+  const defM = pre.masterId || (S.mf !== 'all' ? S.mf : (S.d.staff.works ? S.d.staff.id : (team[0] || {}).id));
+  openSheet(`<h3>Mijoz keldi</h3>
+  ${panel ? `<div class="lbl">Usta</div><div class="chips" id="g-mst">${team.map(m => `<button class="chip ${String(m.id) === String(defM) ? 'on' : ''}" data-a="pick" data-g="g-mst" data-v="${m.id}">${esc(m.name)}</button>`).join('')}</div>` : ''}
+  <label>Mijoz ismi<input id="f-client" list="cl-list" value="${esc(pre.name || '')}" autocomplete="off" placeholder="Masalan: Jasur"></label><datalist id="cl-list"></datalist>
+  <label>Telefon <small>(ixtiyoriy, nasiya uchun shart)</small><input id="f-phone" type="tel" inputmode="tel" value="${esc(pre.phone || '')}" placeholder="+998 90 123 45 67"></label>
+  <div class="lbl">Xizmat</div><div class="chips" id="g-svc">${['Soch olish', 'Soqol', 'Soch + soqol', 'Bolalar', 'Boshqa'].map((x, i) => `<button class="chip ${i ? '' : 'on'}" data-a="pick" data-g="g-svc" data-v="${x}">${x}</button>`).join('')}</div>
+  <label>Summa (so‘m)<input id="f-sum" type="number" inputmode="numeric" value="${s.price}"></label>
+  <div class="lbl">To‘lov turi</div><div class="seg" id="g-pay"><button class="on" data-a="pick" data-g="g-pay" data-v="naqd">Naqd</button><button data-a="pick" data-g="g-pay" data-v="karta">Karta</button><button data-a="pick" data-g="g-pay" data-v="nasiya">Nasiya</button></div>
+  <p class="err" id="f-err"></p>
+  <button class="btn p w" style="margin-top:12px" data-a="visitSave" data-bid="${esc(pre.bookingId || '')}">Saqlash</button>`);
+  const fill = () => { const dl = $('#cl-list'); if (dl && S.clients) dl.innerHTML = S.clients.map(c => `<option value="${esc(c.name)}">${esc(c.phone || '')}</option>`).join(''); };
+  $('#f-client').addEventListener('change', () => {
+    const c = (S.clients || []).find(x => x.name.toLowerCase() === $('#f-client').value.trim().toLowerCase());
+    if (c && c.phone && !$('#f-phone').value) $('#f-phone').value = c.phone;
+  });
+  if (S.clients) fill(); else api('u_clients', {}, true).then(r => { S.clients = r.clients; fill(); }).catch(() => { });
+}
+async function visitSave(el) {
+  const client = val('f-client').trim(), phone = val('f-phone').trim(), sum = +val('f-sum'), pay = picked('g-pay');
+  if (!client) return fail({ msg: 'Mijoz ismini yozing' }, 'f-err');
+  if (!(sum > 0)) return fail({ msg: 'Summani yozing' }, 'f-err');
+  if (phone && digits(phone).length < 9) return fail({ msg: 'Telefon raqam to‘liq emas' }, 'f-err');
+  if (pay === 'nasiya' && digits(phone).length < 9) return fail({ msg: 'Nasiya uchun telefon raqamni yozing' }, 'f-err');
+  if (isPanel() && !picked('g-mst')) return fail({ msg: 'Ustani tanlang' }, 'f-err');
+  el.disabled = true;
+  try {
+    S.d.dash = await api('u_visit_add', Object.assign({ client, phone, sum, pay, service: picked('g-svc'), bookingId: el.dataset.bid, masterId: picked('g-mst') }, mfArg()));
+    S.clients = null; S.report = null; if (el.dataset.bid) S.bookings = null;
+    closeSheet(); haptic('success'); toast('Saqlandi: ' + client + ' · ' + som(sum));
+    S.tab = 'bugun'; renderStaff();
+  } catch (e) { el.disabled = false; fail(e, 'f-err'); }
+}
+function expForm() {
+  openSheet(`<h3>Xarajat qo‘shish</h3>
+  <div class="chips">${['Ijara', 'Svet / gaz', 'Kosmetika', 'Ovqat', 'Asbob', 'Boshqa'].map(x => `<button class="chip" data-a="expName" data-v="${x}">${x}</button>`).join('')}</div>
+  <label>Nima uchun<input id="x-name" placeholder="Masalan: shampun"></label>
+  <label>Summa (so‘m)<input id="x-sum" type="number" inputmode="numeric" placeholder="0"></label>
+  <p class="err" id="x-err"></p><button class="btn p w" style="margin-top:12px" data-a="expSave">Saqlash</button>`);
+}
+async function expSave(el) {
+  const name = val('x-name').trim(), sum = +val('x-sum');
+  if (!name) return fail({ msg: 'Xarajat nomini yozing' }, 'x-err');
+  if (!(sum > 0)) return fail({ msg: 'Summani yozing' }, 'x-err');
+  el.disabled = true;
+  try { S.d.dash = await api('u_exp_add', Object.assign({ name, sum }, mfArg())); S.report = null; closeSheet(); haptic('success'); toast('Xarajat saqlandi'); renderTab(); }
+  catch (e) { el.disabled = false; fail(e, 'x-err'); }
+}
+
+/* --- bronlar --- */
+function tBron() {
+  const t = S.d.today, f = S.bf, panel = isPanel();
+  const all = S.bookings || [];
+  const list = all.filter(b => f === 'hammasi' || (b.status === f && b.date >= t));
+  const cnt = st => all.filter(b => b.status === st && b.date >= t).length;
+  const groups = {};
+  list.forEach(b => (groups[b.date] = groups[b.date] || []).push(b));
+  const dl = d => d === t ? 'Bugun' : d === addD(t, 1) ? 'Ertaga' : d === addD(t, -1) ? 'Kecha' : HF[wd(d)];
+  const mineOrPanel = b => panel || String(b.masterId) === String(S.d.staff.id);
+  return `<div class="seg">
+    <button class="${f === 'kutilmoqda' ? 'on' : ''}" data-a="bf" data-v="kutilmoqda">Yangi (${cnt('kutilmoqda')})</button>
+    <button class="${f === 'tasdiqlandi' ? 'on' : ''}" data-a="bf" data-v="tasdiqlandi">Tasdiqlangan (${cnt('tasdiqlandi')})</button>
+    <button class="${f === 'hammasi' ? 'on' : ''}" data-a="bf" data-v="hammasi">Hammasi</button></div>
+  ${Object.keys(groups).length ? Object.keys(groups).sort().map(d => `<h2>${dl(d)} · ${fd(d)} <small>${groups[d].length} ta</small></h2><div class="list">${groups[d].map(b => `
+    <div class="it" style="align-items:flex-start"><div class="av" style="font-size:12px">${b.time}</div>
+    <div class="mid"><b>${esc(b.name)}</b><span><a href="tel:${esc(b.phone)}">${phoneF(b.phone)}</a>${panel ? ' · usta ' + esc(b.masterName) : ''}</span>
+    <div style="margin-top:6px"><span class="pill ${BST[b.status][1]}">${BST[b.status][0]}</span></div>
+    ${mineOrPanel(b) && b.status === 'kutilmoqda' ? `<div style="display:flex;gap:8px;margin-top:10px"><button class="btn s ok" data-a="bkSet" data-id="${b.id}" data-st="tasdiqlandi">Tasdiqlash</button><button class="btn s no" data-a="bkSet" data-id="${b.id}" data-st="rad">Rad etish</button></div>` : ''}
+    ${mineOrPanel(b) && b.status === 'tasdiqlandi' ? `<div style="display:flex;gap:8px;margin-top:10px"><button class="btn s ok" data-a="came" data-id="${b.id}">Mijoz keldi</button><button class="btn s g" data-a="bkSet" data-id="${b.id}" data-st="bekor">Bekor qilish</button></div>` : ''}
+    </div></div>`).join('')}</div>`).join('')
+      : `<div class="empty" style="margin-top:14px">${f === 'kutilmoqda' ? 'Yangi bron yo‘q. Mijozlar QR kod orqali bron qilsa, shu yerda va botda ko‘rinadi.' : 'Bron yo‘q'}</div>`}`;
+}
+async function bkSet(el) {
+  const st = el.dataset.st;
+  if (st !== 'tasdiqlandi' && !(await confirmBox(st === 'rad' ? 'Bron rad etilsinmi? Mijozga xabar boradi.' : 'Bron bekor qilinsinmi? Mijozga xabar boradi.'))) return;
+  el.disabled = true;
+  try {
+    S.bookings = (await api('u_book_set', { id: el.dataset.id, status: st })).bookings;
+    S.d.dash.pending = S.bookings.filter(b => b.status === 'kutilmoqda' && b.date >= S.d.today && (isPanel() || String(b.masterId) === String(S.d.staff.id))).length;
+    S.dashStale = true; haptic('success');
+    toast(st === 'tasdiqlandi' ? 'Tasdiqlandi — mijozga xabar ketdi' : 'Mijozga xabar ketdi');
+    renderStaff();
+  } catch (e) { el.disabled = false; fail(e); }
+}
+function came(el) {
+  const b = (S.bookings || []).concat(S.d.dash.bookings || []).find(x => x.id === el.dataset.id);
+  if (b) visitForm({ name: b.name, phone: b.phone, bookingId: b.id, masterId: b.masterId });
+}
+
+/* --- mijozlar --- */
+function tMijoz() {
+  const c = S.clients || [];
+  const debt = c.reduce((a, x) => a + (+x.debt || 0), 0);
+  return `<div class="grid" style="margin-top:0">${met('users', 'Jami mijozlar', c.length + ' ta')}${met('debt', 'Umumiy qarz', som(debt))}</div>
+  <div class="row2"><input id="q" placeholder="Ism yoki telefon bo‘yicha qidirish" value="${esc(S.q)}" style="margin:0;flex:1"><button class="btn p s" style="height:48px" data-a="clientForm" aria-label="Mijoz qo‘shish">${I('plus', 20)}</button></div>
+  <div id="cl-res" style="margin-top:12px"></div>`;
+}
+function drawClients() {
+  const q = S.q.toLowerCase().trim();
+  const c = (S.clients || []).filter(x => !q || x.name.toLowerCase().includes(q) || (digits(q) && digits(x.phone).includes(digits(q))));
+  const box = $('#cl-res'); if (!box) return;
+  box.innerHTML = c.length ? `<div class="list">${c.slice(0, 300).map(x => `
+    <div class="it"><div class="av">${esc(ini(x.name))}</div>
+    <div class="mid"><b>${esc(x.name)} ${x.bot ? `<span title="Telegram orqali" style="color:var(--b);display:inline-flex">${I('tgm', 14)}</span>` : ''}</b>
+    <span>${x.visits} marta${x.lastVisit ? ' · oxirgi: ' + fd(x.lastVisit) : ''}${x.lastMaster ? ' · ' + esc(x.lastMaster) : ''}</span>
+    ${x.debt > 0 ? `<span class="pill warn" style="margin-top:4px">Qarz: ${som(x.debt)}</span>` : ''}</div>
+    ${x.phone ? `<a class="ic" href="tel:${esc(x.phone)}" aria-label="Qo‘ng‘iroq">${I('phone', 18)}</a>` : ''}</div>`).join('')}</div>`
+    : `<div class="empty">${q ? 'Hech kim topilmadi' : 'Hali mijoz yo‘q. Mijozlar QR orqali kirsa yoki «Mijoz keldi» qilsangiz, shu yerda paydo bo‘ladi.'}</div>`;
+}
+function clientForm() {
+  openSheet(`<h3>Yangi mijoz</h3><label>Ism<input id="n-name" placeholder="Masalan: Bekzod"></label>
+  <label>Telefon<input id="n-phone" type="tel" inputmode="tel" placeholder="+998 90 123 45 67"></label>
+  <p class="err" id="n-err"></p><button class="btn p w" style="margin-top:12px" data-a="clientSave">Qo‘shish</button>`);
+}
+async function clientSave(el) {
+  const name = val('n-name').trim(), phone = val('n-phone').trim();
+  if (!name) return fail({ msg: 'Ismni yozing' }, 'n-err');
+  if (digits(phone).length < 9) return fail({ msg: 'Telefon raqamni to‘liq yozing' }, 'n-err');
+  el.disabled = true;
+  try { S.clients = (await api('u_client_add', { name, phone })).clients; closeSheet(); haptic('success'); toast('Mijoz qo‘shildi'); renderTab(); }
+  catch (e) { el.disabled = false; fail(e, 'n-err'); }
+}
+
+/* --- hisobot --- */
+function period(p) {
+  const t = S.d.today;
+  if (p === '7kun') return { from: addD(t, -6), to: t };
+  if (p === 'oy') return { from: t.slice(0, 8) + '01', to: t };
+  if (p === 'otgan') { const f = addD(t.slice(0, 8) + '01', -1); return { from: f.slice(0, 8) + '01', to: f }; }
+  return { from: t, to: t };
+}
+function tHisobot() {
+  const R = S.report, m = R.m, p = S.period, panel = isPanel();
+  const mx = Math.max(1, ...R.days.map(d => Math.max(d.t, d.x)));
+  return `<div class="seg">${[['bugun', 'Bugun'], ['7kun', '7 kun'], ['oy', 'Shu oy'], ['otgan', 'O‘tgan oy']].map(x => `<button class="${p === x[0] ? 'on' : ''}" data-a="per" data-v="${x[0]}">${x[1]}</button>`).join('')}</div>
+  <section class="hero" style="margin-top:12px"><div class="hero-l">${panel && S.mf === 'all' ? 'Sartaroshxona' : isOwner() && !panel ? 'Sizning' : 'Sof foyda'} · ${R.from === R.to ? fd(R.from) : fd(R.from) + ' – ' + fd(R.to)}</div><div class="hero-v">${som(m.sof)}</div>
+  <div class="hero-row"><div><span>Tushum</span><b>${som(m.tushum)}</b></div><div><span>Xarajat</span><b>${som(m.xarajat)}</b></div></div></section>
+  <div class="grid">${met('cash', 'Naqd', som(m.naqd))}${met('card', 'Karta', som(m.karta))}${met('debt', 'Nasiyaga berildi', som(m.nasiya))}${met('check', 'Nasiya qaytdi', som(m.qaytdi))}${met('users', 'Mijozlar', m.mijozlar + ' ta')}${met('chart', 'O‘rtacha chek', som(m.ortacha))}</div>
+  ${R.team && (panel ? S.mf === 'all' : true) ? (panel ? teamTable(R.team, null, 'Ustalar bo‘yicha') : teamTable(R.team, R.total, 'Jamoa umumiy')) : ''}
+  ${R.days.length > 1 ? `<h2>Kunlar bo‘yicha</h2><div class="card"><div class="bars">${R.days.map(d => `<div title="${fd(d.d)}"><i style="height:${Math.round(d.t / mx * 100)}%"></i><i class="x" style="height:${Math.round(d.x / mx * 100)}%"></i></div>`).join('')}</div>
+    <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--m);font-weight:700;margin-top:4px"><span>${fd(R.days[0].d)}</span><span>${fd(R.days[R.days.length - 1].d)}</span></div>
+    <div class="legend"><span><i></i>Tushum</span><span><i class="x"></i>Xarajat</span></div></div>` : ''}
+  <h2>Qarzdorlar <small>${R.debts.length} ta · ${som(R.debts.reduce((a, d) => a + (+d.sum || 0), 0))}</small></h2>
+  ${R.debts.length ? `<div class="list">${R.debts.map(d => `
+    <div class="it" style="align-items:flex-start"><div class="av" style="background:var(--warnbg);color:var(--warn)">${esc(ini(d.client))}</div>
+    <div class="mid"><b>${esc(d.client)}</b><span>${fd(d.date)} · <a href="tel:${esc(d.phone)}">${phoneF(d.phone)}</a>${panel ? ' · ' + esc(d.masterName) : ''}</span>
+    <div style="display:flex;gap:8px;margin-top:8px"><button class="btn s ok" data-a="debtPay" data-id="${d.id}" data-v="naqd">Naqd to‘ladi</button><button class="btn s g" data-a="debtPay" data-id="${d.id}" data-v="karta">Karta</button></div></div>
+    <div class="end"><b>${fmt(d.sum)}</b></div></div>`).join('')}</div>` : `<div class="empty">Qarzdor yo‘q</div>`}`;
+}
+async function debtPay(el) {
+  el.disabled = true;
+  try { await api('u_debt_pay', { id: el.dataset.id, via: el.dataset.v }); S.report = await api('u_report', Object.assign(period(S.period), mfArg()), true); S.dashStale = true; S.clients = null; haptic('success'); toast('Qarz yopildi'); renderTab(); }
+  catch (e) { el.disabled = false; fail(e); }
+}
+
+/* --- boshqaruv / rahbar --- */
+function renderBosh(m) {
+  const s = S.d.shop;
+  const sec = S.sec;
+  if (sec === 'jamoa') return secJamoa(m);
+  if (sec === 'qr') { m.innerHTML = secQr(); return drawPreview(); }
+  if (sec === 'sms') return secSms(m);
+  if (sec === 'mass') { m.innerHTML = secMass(); return; }
+  if (sec === 'info') { m.innerHTML = secInfo(); return; }
+  const left = Math.round((new Date(s.paidUntil + 'T00:00:00Z') - new Date(S.d.today + 'T00:00:00Z')) / 864e5);
+  const item = (k, ic, t, sub, lock) => `<div class="it" data-a="sec" data-v="${k}"><div class="av">${I(ic, 20)}</div><div class="mid"><b>${t}${lock ? ` <span class="pill pro">${lock}</span>` : ''}</b><span>${sub}</span></div>${I('chev', 18, '#8A94AB')}</div>`;
+  m.innerHTML = `
+  <section class="hero"><div class="hero-l">Tarif · ${fd(s.paidUntil)} gacha · ${left > 0 ? left + ' kun qoldi' : 'bugun tugaydi'}</div>
+  <div class="hero-v" style="font-size:24px">${s.tariffName} — ${som(s.tariffPrice)}<span style="font-size:13px;color:#A9C2F5"> /oy</span></div>
+  <div class="hero-row"><div><span>Ustalar</span><b>${(s.masters || []).length} / ${s.max}</b></div><div><span>SMS</span><b>${s.sms ? 'Bor' : 'Yo‘q'}</b></div><div><span>Rahbar paneli</span><b>${s.panel ? 'Bor' : 'Yo‘q'}</b></div></div></section>
+  ${s.tariff !== 'biznes' ? `<button class="btn g w" style="margin-top:12px" data-a="tariffs">${I('crown', 18)} Tarifni oshirish</button>` : ''}
+  <h2>Boshqaruv</h2>
+  <div class="list menu">
+  ${item('jamoa', 'users', 'Jamoa', 'Ustalarni qo‘shish va chiqarish')}
+  ${item('qr', 'scan', 'QR poster', 'A4 PDF · ID ' + s.id)}
+  ${item('sms', 'sms', 'SMS xizmati', 'Bron, eslatma, qaytarish SMS', s.sms ? '' : 'Standart')}
+  ${item('mass', 'mega', 'Ommaviy xabar', 'Mijozlarga Telegram' + (s.sms ? ' va SMS' : ''))}
+  ${item('info', 'shop', 'Sartaroshxona ma’lumotlari', 'Nomi, manzil, narx, ish vaqti')}
+  </div>`;
+}
+function tariffsSheet() {
+  const T = S.d.tariffs, cur = S.d.shop.tariff, c = S.d.contact || '';
+  const feat = k => k === 'start' ? ['1–2 usta', 'Kassa, mijozlar, bron', 'QR poster'] : k === 'standart' ? ['4 tagacha usta', 'SMS xizmati (o‘z Eskiz hisobingiz)', 'Ommaviy SMS'] : ['8 tagacha usta', 'SMS xizmati', 'Rahbar paneli: har usta bo‘yicha hisobot, barcha bronlar'];
+  openSheet(`<h3>Tariflar</h3>${Object.keys(T).map(k => `<div class="card" style="margin-bottom:10px;${k === cur ? 'border:2px solid var(--b)' : ''}">
+    <div style="display:flex;justify-content:space-between;align-items:center"><b style="font:700 16px var(--h)">${T[k].name}</b><b>${som(T[k].price)}<span style="color:var(--m);font-weight:600;font-size:12px">/oy</span></b></div>
+    <div class="hint" style="font-size:13px">${feat(k).map(x => '✓ ' + x).join('<br>')}</div>${k === cur ? '<span class="pill" style="margin-top:8px">Hozirgi tarif</span>' : ''}</div>`).join('')}
+    <p class="hint" style="text-align:center;margin:10px 0 12px">Tarifni o‘zgartirish va to‘lov uchun administratorga yozing.</p>
+    ${c ? (c.startsWith('@') ? `<button class="btn p w" data-a="contact">${I('send', 18)} ${esc(c)} ga yozish</button>` : `<a class="btn p w" href="tel:${esc(c)}">${I('phone', 18)} ${esc(c)}</a>`) : ''}`);
+}
+
+async function secJamoa(m) {
+  const back = `<button class="btn g s" data-a="secBack" style="margin-bottom:12px">← Orqaga</button>`;
+  if (!S.team) { m.innerHTML = back + loader(); try { S.team = await api('o_team', {}, true); } catch (e) { return fail(e); } }
+  const T = S.team, me = S.d.staff;
+  m.innerHTML = back + `<h3>Jamoa <span style="font:600 13px Manrope,sans-serif;color:var(--m)">${T.count} / ${T.max} usta</span></h3>
+  <div class="bar1"><i style="width:${Math.min(100, T.count / T.max * 100)}%"></i></div>
+  <div class="list" style="margin-top:14px">${T.team.map(x => `<div class="it"><div class="av">${esc(ini(x.name))}</div>
+    <div class="mid"><b>${esc(x.name)} ${x.role === 'egasi' ? '<span class="pill gray">egasi</span>' : ''}</b><span>${phoneF(x.phone)}${x.role === 'egasi' && !x.works ? ' · mijoz qabul qilmaydi' : ''}</span></div>
+    ${x.role === 'egasi' ? '' : `<button class="ic" data-a="staffRm" data-id="${x.id}" data-n="${esc(x.name)}" aria-label="Chiqarish">${I('trash', 18)}</button>`}</div>`).join('')}</div>
+  <div class="card" style="margin-top:12px;display:flex;align-items:center;gap:12px"><div style="flex:1"><b>Men ham mijoz qabul qilaman</b><div class="hint">O‘chirsangiz, mijozlar sizni usta sifatida tanlay olmaydi</div></div>
+    <button class="tgl ${me.works ? 'on' : ''}" data-a="works" aria-label="Men ham ishlayman"></button></div>
+  ${T.count < T.max ? `<button class="btn p w" style="margin-top:14px" data-a="invite">${I('plus', 20)} Usta qo‘shish</button><p class="hint" style="text-align:center">Taklif havolasini ustaga yuborasiz. U bosib, ismini va raqamini yuboradi.</p>`
+      : `<div class="lock" style="margin-top:14px">${I('crown', 22)}<div>${S.d.shop.tariffName} tarifida ${T.max} tagacha usta. Ko‘proq usta uchun tarifni oshiring.<br><button class="btn s g" style="margin-top:8px" data-a="tariffs">Tariflarni ko‘rish</button></div></div>`}`;
+}
+async function invite(el) {
+  el.disabled = true;
+  try {
+    const r = await api('o_invite');
+    const text = S.d.shop.shop + ' sartaroshxonasiga usta sifatida qo‘shiling (Ustam CRM)';
+    openSheet(`<h3>Taklif havolasi tayyor</h3><p style="color:var(--m);margin:0 0 12px">Havola 48 soat amal qiladi va bir marta ishlatiladi.</p>
+    <div class="card" style="word-break:break-all;font-size:13px;font-weight:700">${esc(r.link)}</div>
+    <button class="btn p w" style="margin-top:12px" data-a="share" data-v="${esc(r.link)}" data-t="${esc(text)}">${I('send', 18)} Telegram orqali yuborish</button>
+    <button class="btn g w" style="margin-top:8px" data-a="copy" data-v="${esc(r.link)}">Nusxalash</button>`);
+  } catch (e) { fail(e); }
+  el.disabled = false;
+}
+
+function secQr() {
+  const s = S.d.shop, link = 'https://t.me/' + S.d.bot + '?start=S' + s.id;
+  return `<button class="btn g s" data-a="secBack" style="margin-bottom:12px">← Orqaga</button>
+  <div class="idbox"><div><span>Sartaroshxona ID</span><br><b>${s.id}</b></div><button class="btn s g" data-a="copy" data-v="${esc(link)}">Havolani nusxalash</button></div>
+  <div id="pv" class="pv" style="width:282px;height:399px"></div>
+  <button class="btn p w" style="margin-top:12px" data-a="posterPdf">${I('send', 18)} A4 PDF ni botga yuborish</button>
+  <p class="hint" style="text-align:center">PDF chatga keladi — chop etib sartaroshxonaga osib qo‘ying.</p>`;
+}
+
+async function secSms(m) {
+  const back = `<button class="btn g s" data-a="secBack" style="margin-bottom:12px">← Orqaga</button>`;
+  if (!S.d.shop.sms) {
+    m.innerHTML = back + `<div class="lock">${I('sms', 24)}<div>SMS xizmati Standart (${som(S.d.tariffs.standart.price)}) va Biznes tariflarida.<br><button class="btn s g" style="margin-top:8px" data-a="tariffs">Tariflarni ko‘rish</button></div></div>`;
+    return;
+  }
+  if (!S.sms) { m.innerHTML = back + loader(); try { S.sms = await api('o_sms_get', {}, true); } catch (e) { return fail(e); } }
+  const c = S.sms.cfg;
+  const tg2 = (k, t, sub) => `<div class="it"><div class="mid"><b>${t}</b><span>${sub}</span></div><button class="tgl ${c.on[k] ? 'on' : ''}" data-a="smsOn" data-k="${k}" aria-label="${t}"></button></div>`;
+  m.innerHTML = back + `<h3>SMS xizmati</h3>
+  <div class="card" style="font-size:13px;color:var(--m)">SMS sartaroshxonangizning <b style="color:var(--n)">o‘z Eskiz.uz hisobidan</b> ketadi va balansi o‘sha yerdan yechiladi. Eskiz.uz da ro‘yxatdan o‘tib, email va parolni shu yerga yozing.</div>
+  <h2>Eskiz hisobi</h2>
+  <div class="card">
+  <label>Eskiz email<input id="sm-email" type="email" value="${esc(c.email)}" placeholder="email@gmail.com"></label>
+  <label>Eskiz parol <small>${c.hasPass ? '(saqlangan — o‘zgartirish uchun yozing)' : ''}</small><input id="sm-pass" type="password" placeholder="${c.hasPass ? '••••••••' : 'Parol'}"></label>
+  <label>Jo‘natuvchi nomi <small>(Eskiz’da tasdiqlangan, odatda 4546)</small><input id="sm-from" value="${esc(c.from)}"></label></div>
+  <h2>Qachon yuborilsin</h2>
+  <div class="list">${tg2('confirm', 'Bron tasdiqlanganda', 'Mijozga sana va vaqt')}${tg2('remind', 'Navbatdan oldin eslatma', '1–2 soat oldin')}${tg2('back', 'Uzoq kelmaganni qaytarish', 'Har kuni 21:00 da tekshiriladi')}</div>
+  <label>Necha kun kelmasa «qaytarish» SMS<input id="sm-days" type="number" value="${c.backDays}"></label>
+  <h2>Matnlar</h2>
+  <p class="hint" style="margin-top:-4px">O‘zgaruvchilar: {shop} {date} {time} {ism} {usta} {address} {phone}. Eskiz matnlarni moderatsiyadan o‘tkazadi — yangi matnni avval Eskiz kabinetida tasdiqlating. Lotin harflarida ʻ o‘rniga oddiy ' ishlating, aks holda SMS qimmatlashadi.</p>
+  <label>Tasdiq<textarea id="sm-t-confirm">${esc(c.t.confirm)}</textarea></label>
+  <label>Eslatma<textarea id="sm-t-remind">${esc(c.t.remind)}</textarea></label>
+  <label>Qaytarish<textarea id="sm-t-back">${esc(c.t.back)}</textarea></label>
+  <p class="err" id="sm-err"></p>
+  <button class="btn p w" style="margin-top:8px" data-a="smsSave">Saqlash</button>
+  <h2>Sinov SMS</h2>
+  <div class="row2" style="margin-top:0"><input id="sm-test" type="tel" placeholder="+998 90 123 45 67" style="margin:0;flex:1"><button class="btn g s" style="height:48px" data-a="smsTest">Yuborish</button></div>
+  <h2>Oxirgi SMS lar <small>${S.sms.log.length} ta</small></h2>
+  ${S.sms.log.length ? `<div class="list">${S.sms.log.map(l => `<div class="it"><div class="mid"><b>${phoneF(l.phone)} <span class="pill ${String(l.status).startsWith('xato') ? 'bad' : 'ok'}">${String(l.status).startsWith('xato') ? 'xato' : 'ketdi'}</span></b><span>${esc(l.date)} · ${esc(l.type)} · ${esc(String(l.text).slice(0, 60))}</span></div></div>`).join('')}</div>` : '<div class="empty">Hali SMS yuborilmagan</div>'}`;
+}
+async function smsSave(el) {
+  const c = S.sms.cfg;
+  const f = { email: val('sm-email').trim(), pass: val('sm-pass'), from: val('sm-from').trim(), on: c.on, backDays: +val('sm-days'), t: { confirm: val('sm-t-confirm'), remind: val('sm-t-remind'), back: val('sm-t-back') } };
+  if (f.email && !/^\S+@\S+\.\S+$/.test(f.email)) return fail({ msg: 'Email noto‘g‘ri' }, 'sm-err');
+  if (f.email && !f.pass && !c.hasPass) return fail({ msg: 'Eskiz parolini yozing' }, 'sm-err');
+  el.disabled = true;
+  try { await api('o_sms_save', { f }); S.sms = null; haptic('success'); toast('SMS sozlamalari saqlandi'); renderTab(); }
+  catch (e) { el.disabled = false; fail(e, 'sm-err'); }
+}
+
+function secMass() {
+  const sms = S.d.shop.sms;
+  return `<button class="btn g s" data-a="secBack" style="margin-bottom:12px">← Orqaga</button>
+  <h3>Ommaviy xabar</h3>
+  <div class="lbl">Kimga</div><div class="chips" id="g-mf"><button class="chip on" data-a="pick" data-g="g-mf" data-v="all">Hamma mijozlar</button><button class="chip" data-a="pick" data-g="g-mf" data-v="old">30+ kun kelmaganlar</button><button class="chip" data-a="pick" data-g="g-mf" data-v="debt">Qarzdorlar</button></div>
+  <div class="lbl">Qanday</div><div class="seg" id="g-ch"><button class="on" data-a="pick" data-g="g-ch" data-v="tg">Telegram</button>${sms ? `<button data-a="pick" data-g="g-ch" data-v="sms">SMS</button><button data-a="pick" data-g="g-ch" data-v="both">Ikkalasi</button>` : ''}</div>
+  ${sms ? '<p class="hint">«Ikkalasi»: Telegram’da bor mijozga Telegram, qolganlarga SMS ketadi.</p>' : '<p class="hint">SMS orqali yuborish Standart va Biznes tariflarida.</p>'}
+  <label>Xabar matni<textarea id="ms-text" placeholder="Masalan: Bayram munosabati bilan 20% chegirma! Navbat oling."></textarea></label>
+  <p class="err" id="ms-err"></p>
+  <button class="btn p w" style="margin-top:8px" data-a="massSend">${I('send', 18)} Yuborish</button>`;
+}
+async function massSend(el) {
+  const text = val('ms-text').trim();
+  if (text.length < 5) return fail({ msg: 'Xabar matnini yozing' }, 'ms-err');
+  if (!(await confirmBox('Xabar yuborilsinmi?'))) return;
+  el.disabled = true; el.textContent = 'Yuborilmoqda…';
+  try {
+    const r = await api('o_mass', { text, channel: picked('g-ch'), filter: picked('g-mf') });
+    haptic('success');
+    openSheet(`<div style="text-align:center"><div class="big" style="background:var(--okbg);color:var(--ok)">${I('send', 30)}</div><h3>Yuborildi</h3>
+    <p style="color:var(--m)">Jami: ${r.total} ta mijoz<br>Telegram: <b style="color:var(--n)">${r.tg}</b> · SMS: <b style="color:var(--n)">${r.sms}</b>${r.fail ? ' · xato: ' + r.fail : ''}${r.skip ? '<br>' + r.skip + ' ta mijozda Telegram ham, telefon ham yo‘q' : ''}</p>
+    <button class="btn p w" data-a="closeSheet">Yaxshi</button></div>`);
+    S.sec = null; renderTab();
+  } catch (e) { el.disabled = false; el.textContent = 'Yuborish'; fail(e, 'ms-err'); }
+}
+
+function secInfo() {
+  const s = S.d.shop;
+  return `<button class="btn g s" data-a="secBack" style="margin-bottom:12px">← Orqaga</button><h3>Sartaroshxona ma’lumotlari</h3>
+  <div class="card">
+  <label>Sartaroshxona nomi<input id="s-shop" value="${esc(s.shop)}"></label>
+  <label>Ismingiz<input id="s-name" value="${esc(S.d.staff.name)}"></label>
+  <label>Telefon<input id="s-phone" type="tel" value="${esc(s.phone)}"></label>
+  <label>Manzil<input id="s-address" value="${esc(s.address)}"></label>
+  <label>Soch olish narxi (so‘m)<input id="s-price" type="number" inputmode="numeric" value="${s.price}"></label>
+  <div style="display:flex;gap:10px"><label style="flex:1">Ochiladi<input id="s-open" type="time" value="${s.open}"></label><label style="flex:1">Yopiladi<input id="s-close" type="time" value="${s.close}"></label></div>
+  <label>Bitta mijozga vaqt<select id="s-slot">${[15, 20, 30, 40, 45, 60].map(x => `<option value="${x}" ${+s.slot === x ? 'selected' : ''}>${x} daqiqa</option>`).join('')}</select></label>
+  <p class="err" id="s-err"></p><button class="btn p w" style="margin-top:8px" data-a="saveSet">Saqlash</button></div>`;
+}
+async function saveSet(el) {
+  const f = { shop: val('s-shop'), name: val('s-name'), phone: val('s-phone'), address: val('s-address'), price: val('s-price'), open: val('s-open'), close: val('s-close'), slot: val('s-slot') };
+  if (f.shop.trim().length < 2) return fail({ msg: 'Nomni yozing' }, 's-err');
+  if (digits(f.phone).length < 9) return fail({ msg: 'Telefon raqam noto‘g‘ri' }, 's-err');
+  if (f.open >= f.close) return fail({ msg: 'Yopilish vaqti ochilishdan keyin bo‘lsin' }, 's-err');
+  el.disabled = true;
+  try { S.d.shop = (await api('o_settings_save', { f })).shop; S.d.staff.name = f.name.trim() || S.d.staff.name; haptic('success'); toast('Saqlandi'); S.sec = null; renderStaff(); }
+  catch (e) { el.disabled = false; fail(e, 's-err'); }
+}
+
+/* --- QR poster --- */
+const LIB = {};
+function lib(src) { return LIB[src] || (LIB[src] = new Promise((ok, no) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = () => { delete LIB[src]; no({ error: 'net' }); }; document.head.appendChild(s); })); }
+function qrData(text) { const q = qrcode(0, 'M'); q.addData(text); q.make(); return q.createDataURL(12, 0); }
+function posterHTML(s, qr) {
+  const B = '#1D5FE0', N = '#0B1B3F', M = '#4A5878', L = '#EAF1FF';
+  const ms = (s.masters || []).map(m => m.name);
+  const who = ms.length <= 1 ? 'Usta: ' + esc(ms[0] || '') : 'Ustalar: ' + esc(ms.slice(0, 3).join(', ')) + (ms.length > 3 ? ' va boshqalar' : '');
+  const step = (n, i, t, sub) => `<div style="flex:1;display:flex;align-items:center;gap:12px;padding:14px 16px;border:1.5px solid #D5E2FB;border-radius:18px;background:#fff">
+    <div style="width:40px;height:40px;flex:none;border-radius:12px;background:${L};color:${B};display:flex;align-items:center;justify-content:center">${I(i, 22)}</div>
+    <div><div style="font:600 15px Unbounded,sans-serif;color:${N}">${n}. ${t}</div><div style="font-size:13px;color:${M}">${sub}</div></div></div>`;
+  return `<div style="width:794px;height:1123px;box-sizing:border-box;padding:52px 56px;background:#fff;font-family:Manrope,sans-serif;color:${N};display:flex;flex-direction:column;position:relative;overflow:hidden">
+  <div style="position:absolute;top:-160px;right:-160px;width:420px;height:420px;border-radius:50%;background:${L}"></div>
+  <div style="position:absolute;bottom:150px;left:-120px;width:240px;height:240px;border-radius:50%;border:2px solid #D5E2FB"></div>
+  <div style="position:relative;display:flex;align-items:center;justify-content:space-between">
+    <div style="display:flex;align-items:center;gap:12px"><div style="width:46px;height:46px;border-radius:14px;background:${L};display:flex;align-items:flex-end;justify-content:center;overflow:hidden">${MASCOT(44)}</div>
+    <div><div style="font:700 19px Unbounded,sans-serif">Ustam CRM</div><div style="font-size:12px;color:${M};font-weight:500">Onlayn navbat tizimi</div></div></div>
+    <div style="padding:9px 16px;border-radius:999px;background:${N};color:#fff;font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px">${I('cal', 16)}<span>Navbatsiz kuting</span></div>
+  </div>
+  <div style="position:relative;margin-top:44px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px">
+    <div style="font-size:13px;font-weight:700;letter-spacing:3px;color:${B}">SARTAROSHXONA</div>
+    <div style="font:700 ${s.shop.length > 16 ? 46 : 60}px/1.05 Unbounded,sans-serif;letter-spacing:-1.5px">${esc(s.shop)}</div>
+    <div style="display:flex;align-items:center;gap:14px;margin-top:6px;font-size:19px;font-weight:600">
+      <span>${who}</span><span style="width:6px;height:6px;border-radius:50%;background:${B}"></span>
+      <span style="display:flex;align-items:center;gap:8px;color:${B}">${I('phone', 20)}${esc(phoneF(s.phone))}</span></div>
+  </div>
+  <div style="position:relative;margin:36px auto 0;width:452px;box-sizing:border-box;padding:26px 30px 30px;border-radius:32px;background:#fff;border:3px solid ${B};display:flex;flex-direction:column;align-items:center;gap:18px">
+    <div style="display:flex;align-items:center;gap:10px;font:600 19px Unbounded,sans-serif"><span style="color:${B};display:flex">${I('scan', 26)}</span>Skanerlang va navbat oling</div>
+    <img src="${qr}" alt="" style="width:340px;height:340px;image-rendering:pixelated;display:block">
+    <div style="font-size:14px;color:${M};font-weight:500">Telefon kamerasini QR kodga qarating</div>
+  </div>
+  <div style="position:relative;margin-top:28px;display:flex;gap:12px">${step(1, 'scan', 'Skanerlang', 'Kamera orqali')}${step(2, 'send', 'Botga kiring', 'Ism va telefon')}${step(3, 'cal', 'Bron qiling', 'Ustani tanlang')}</div>
+  <div style="position:relative;margin-top:18px;text-align:center;font-size:14px;color:${M};font-weight:500">QR ishlamasa: Telegram’da <b style="color:${N}">@${esc(S.d.bot)}</b> → sartaroshxona ID: <b style="color:${B}">${s.id}</b></div>
+  <div style="flex:1"></div>
+  <div style="position:relative;display:flex;align-items:center;gap:16px;padding:18px 22px;border-radius:20px;background:${N};color:#fff">
+    <div style="width:44px;height:44px;flex:none;border-radius:12px;background:${B};display:flex;align-items:center;justify-content:center">${I('pin', 24)}</div>
+    <div><div style="font-size:12px;font-weight:600;letter-spacing:2px;color:#A9C2F5">MANZIL</div><div style="font-size:18px;font-weight:600">${esc(s.address)}</div></div>
+  </div></div>`;
+}
+function drawPreview() {
+  const box = $('#pv'); if (!box) return;
+  try {
+    const qr = qrData('https://t.me/' + S.d.bot + '?start=S' + S.d.shop.id);
+    box.innerHTML = `<div style="transform:scale(${282 / 794});transform-origin:0 0;width:794px;height:1123px">${posterHTML(S.d.shop, qr)}</div>`;
+  } catch (e) { box.innerHTML = `<div class="empty" style="border:0">Ko‘rinish yuklanmadi</div>`; }
+}
+async function posterPdf(el) {
+  el.disabled = true; const old = el.innerHTML; el.innerHTML = 'PDF tayyorlanmoqda…';
+  try {
+    await Promise.all([lib('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js'), lib('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js')]);
+    const host = $('#poster-host');
+    host.innerHTML = posterHTML(S.d.shop, qrData('https://t.me/' + S.d.bot + '?start=S' + S.d.shop.id));
+    try { await document.fonts.ready; } catch (x) { }
+    await new Promise(r => setTimeout(r, 300));
+    const cv = await html2canvas(host.firstElementChild, { scale: 2, backgroundColor: '#ffffff', useCORS: true });
+    host.innerHTML = '';
+    const pdf = new window.jspdf.jsPDF({ unit: 'mm', format: 'a4', compress: true });
+    pdf.addImage(cv.toDataURL('image/jpeg', 0.92), 'JPEG', 0, 0, 210, 297);
+    await api('o_poster_send', { pdf: pdf.output('datauristring') });
+    haptic('success'); toast('PDF botga yuborildi — chatni oching');
+  } catch (e) { fail(e); }
+  el.disabled = false; el.innerHTML = old;
+}
+
+/* ================= MIJOZ ================= */
+function renderClient() {
+  const c = S.d.client, s = c.shop;
+  if (!S.cDate) S.cDate = S.d.today;
+  const ms = s.masters || [];
+  if (!S.cMaster || !ms.some(m => String(m.id) === String(S.cMaster))) S.cMaster = ms.length ? String(ms[0].id) : null;
+  $('#app').innerHTML = `
+  <div class="top"><div class="brand"><div class="logo">${MASCOT(36)}</div><div><b>Ustam CRM</b><span>Salom, ${esc(c.me.name)}</span></div></div>
+  ${modesBar() || (c.shops.length > 1 ? `<select id="shopSel" style="width:auto;max-width:48%;height:40px;margin:0">${c.shops.map(x => `<option value="${x.id}" ${String(x.id) === String(s.id) ? 'selected' : ''}>${esc(x.shop)}</option>`).join('')}</select>` : '')}</div>
+  <main>
+  <section class="shopcard"><small>SARTAROSHXONA</small><h1>${esc(s.shop)}</h1>
+  <p>${I('users', 16)}${ms.length} ta usta</p><p>${I('pin', 16)}${esc(s.address)}</p>
+  <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap"><a class="btn s" style="background:#fff;color:var(--n)" href="tel:${esc(s.phone)}">${I('phone', 16)} Qo‘ng‘iroq</a><span class="pill" style="background:rgba(255,255,255,.14);color:#fff;align-self:center">Soch olish: ${som(s.price)}</span></div></section>
+  ${c.closed ? `<div class="notice" style="margin-top:14px">Sartaroshxona hozircha onlayn bron qabul qilmayapti. Iltimos, telefon orqali bog‘laning.</div>` : !ms.length ? `<div class="notice" style="margin-top:14px">Hozircha bron uchun usta yo‘q.</div>` : `
+  <h2>Ustani tanlang</h2>
+  <div class="chips sc">${ms.map(m => `<button class="chip ${String(m.id) === String(S.cMaster) ? 'on' : ''}" data-a="cMaster" data-v="${m.id}" style="height:44px"><span style="display:inline-flex;width:26px;height:26px;border-radius:8px;background:var(--l);color:var(--b);align-items:center;justify-content:center;font:700 11px var(--h);margin-right:6px;vertical-align:middle">${esc(ini(m.name))}</span>${esc(m.name)}</button>`).join('')}</div>
+  <h2>Kunni tanlang</h2>
+  <div class="days">${Array.from({ length: 7 }, (_, i) => { const x = addD(S.d.today, i); return `<button class="day ${x === S.cDate ? 'on' : ''}" data-a="cDay" data-v="${x}"><span>${i === 0 ? 'Bugun' : i === 1 ? 'Ertaga' : HF[wd(x)]}</span><b>${+x.slice(8)}</b></button>`; }).join('')}</div>
+  <div id="slots" style="margin-top:12px"></div>`}
+  <h2>Mening bronlarim</h2><div id="myb"></div>
+  </main><div id="bb"></div>`;
+  const sel = $('#shopSel');
+  if (sel) sel.addEventListener('change', async () => {
+    try { const r = await api('c_shop', { shopId: sel.value }); Object.assign(S.d.client, r); S.cDate = null; S.cMaster = null; S.slots = null; S.pick = null; renderClient(); } catch (e) { fail(e); }
+  });
+  drawMy();
+  if (!c.closed && ms.length) loadSlots();
+}
+async function loadSlots() {
+  const box = $('#slots'); if (!box) return;
+  S.pick = null; drawBar(); box.innerHTML = loader();
+  try { S.slots = (await api('c_slots', { shopId: S.d.client.shop.id, date: S.cDate, masterId: S.cMaster }, true)).slots; } catch (e) { box.innerHTML = ''; return fail(e); }
+  drawSlots();
+}
+function drawSlots() {
+  const box = $('#slots'); if (!box) return;
+  const sl = S.slots || [];
+  box.innerHTML = sl.length ? `<div class="slots">${sl.map(x => `<button class="slot ${S.pick === x.t ? 'on' : ''}" ${x.free ? '' : 'disabled'} data-a="cPick" data-v="${x.t}">${x.t}</button>`).join('')}</div>
+    <div class="legend" style="margin-top:10px"><span><i style="background:#fff;border:1px solid var(--line)"></i>Bo‘sh</span><span><i style="background:#F1F3F8"></i>Band</span></div>`
+    : `<div class="empty">Bu kunga bo‘sh vaqt qolmagan. Boshqa kun yoki ustani tanlang.</div>`;
+}
+function drawBar() {
+  const bb = $('#bb'); if (!bb) return;
+  const m = (S.d.client.shop.masters || []).find(x => String(x.id) === String(S.cMaster)) || {};
+  bb.innerHTML = S.pick ? `<div class="bookbar"><div><span>${fd(S.cDate)}, soat ${S.pick}<small>Usta: ${esc(m.name || '')}</small></span><button class="btn p" style="flex:none;padding:0 22px" data-a="cBook">Bron qilish</button></div></div>` : '';
+}
+function drawMy() {
+  const box = $('#myb'); if (!box) return;
+  const t = S.d.today, b = S.d.client.bookings || [];
+  box.innerHTML = b.length ? `<div class="list">${b.map(x => {
+    const act = ACTIVE_ST.includes(x.status) && x.date >= t;
+    return `<div class="it"><div class="av" style="font-size:12px">${x.time}</div><div class="mid"><b>${fd(x.date)}${x.date === t ? ' · bugun' : ''}</b><span>Usta: ${esc(x.masterName || '')}</span><span class="pill ${BST[x.status][1]}" style="margin-top:4px">${BST[x.status][0]}</span></div>
+    ${act ? `<button class="btn s g" data-a="cCancel" data-id="${x.id}">Bekor qilish</button>` : ''}</div>`;
+  }).join('')}</div>` : `<div class="empty">Hali bron yo‘q. Yuqoridan usta, kun va vaqtni tanlang.</div>`;
+}
+const ACTIVE_ST = ['kutilmoqda', 'tasdiqlandi'];
+async function cBook(el) {
+  el.disabled = true;
+  try {
+    const r = await api('c_book', { shopId: S.d.client.shop.id, date: S.cDate, time: S.pick, masterId: S.cMaster });
+    S.d.client.bookings = r.bookings; S.slots = r.slots; const t = S.pick; S.pick = null;
+    drawSlots(); drawBar(); drawMy(); haptic('success');
+    openSheet(`<div style="text-align:center;padding:8px 0 4px"><div class="big" style="width:64px;height:64px;border-radius:20px;background:var(--okbg);color:var(--ok)">${I('check', 30)}</div>
+    <h3>Bron yuborildi!</h3><p style="color:var(--m);margin:0 0 16px">${fd(S.cDate)}, soat <b style="color:var(--n)">${t}</b> · ${esc(S.d.client.shop.shop)}<br>Usta tasdiqlasa, botga xabar keladi.</p>
+    <button class="btn p w" data-a="closeSheet">Yaxshi</button></div>`);
+  } catch (e) { el.disabled = false; fail(e); if (e.error === 'busy') loadSlots(); }
+}
+async function cCancel(el) {
+  if (!(await confirmBox('Bron bekor qilinsinmi?'))) return;
+  el.disabled = true;
+  try { S.d.client.bookings = (await api('c_cancel', { shopId: S.d.client.shop.id, id: el.dataset.id })).bookings; drawMy(); haptic('success'); toast('Bron bekor qilindi'); if (!S.d.client.closed) loadSlots(); }
+  catch (e) { el.disabled = false; fail(e); }
+}
+
+/* ================= PLATFORMA ADMIN ================= */
+function renderAdmin() {
+  const tabs = [['stat', 'Statistika', 'chart'], ['shops', 'Ro‘yxat', 'shop'], ['msg', 'Xabar', 'mega'], ['set', 'Sozlama', 'shield']];
+  $('#app').innerHTML = `<div class="top"><div class="brand"><div class="logo adm">${I('shield', 22)}</div><div><b>Ustam CRM · Admin</b><span>${S.d.super ? 'Asosiy admin' : 'Admin'}</span></div></div>
+  ${modesBar() || `<button class="ic" data-a="aRefresh" aria-label="Yangilash">${I('refresh')}</button>`}</div>
+  <main id="main"></main>
+  <nav class="nav">${tabs.map(t => `<button class="${S.aTab === t[0] ? 'on' : ''}" data-a="aTab" data-t="${t[0]}">${I(t[2], 22)}${t[1]}</button>`).join('')}</nav>`;
+  renderATab();
+}
+async function renderATab() {
+  const m = $('#main'); if (!m) return;
+  if (!S.A) { m.innerHTML = loader(); try { S.A = await api('a_dash', {}, true); } catch (e) { return fail(e); } }
+  const t = S.aTab;
+  if (t === 'stat') m.innerHTML = aStat();
+  if (t === 'shops') { m.innerHTML = aShops(); drawShops(); }
+  if (t === 'msg') { if (!S.hist) { m.innerHTML = loader(); try { S.hist = await api('a_history', {}, true); } catch (e) { return fail(e); } } m.innerHTML = aMsg(); }
+  if (t === 'set') {
+    if (!S.admins) { m.innerHTML = loader(); try { S.admins = await api('a_admins', {}, true); if (S.d.super) S.admins.sms = await api('a_sms_get', {}, true); if (!S.hist) S.hist = await api('a_history', {}, true); } catch (e) { return fail(e); } }
+    m.innerHTML = aSet();
+  }
+}
+function aStat() {
+  const st = S.A.stats, T = S.d.tariffs;
+  const soon = S.A.shops.filter(x => x.left <= 3 && x.status !== 'bloklangan').slice(0, 8);
+  const mx = Math.max(1, ...st.byTariff.map(x => x.n));
+  return `<section class="hero"><div class="hero-l">Oylik takroriy daromad (MRR)</div><div class="hero-v">${som(st.mrr)}</div>
+  <div class="hero-row"><div><span>Shu oy to‘landi</span><b>${som(st.paidMonth)}</b></div><div><span>Faol</span><b>${st.active} / ${st.shops}</b></div></div></section>
+  <div class="grid">${met('shop', 'Sartaroshxonalar', st.shops + ' ta')}${met('ban', 'Muddati tugagan', st.expired + ' ta')}${met('sc', 'Ustalar', st.masters + ' ta')}${met('users', 'Mijozlar (botda)', st.clients + ' ta')}</div>
+  <h2>Tariflar bo‘yicha <small>faollar</small></h2><div class="card">${st.byTariff.map(x => `<div style="margin:6px 0 12px"><div style="display:flex;justify-content:space-between;font-weight:700;font-size:14px"><span>${T[x.k].name} · ${som(T[x.k].price)}</span><span>${x.n} ta</span></div><div class="bar1"><i style="width:${x.n / mx * 100}%"></i></div></div>`).join('')}</div>
+  <h2>Muddati tugayotganlar <small>3 kun ichida</small></h2>
+  ${soon.length ? `<div class="list">${soon.map(shopRow).join('')}</div>` : '<div class="empty">Hozircha yo‘q</div>'}`;
+}
+function shopRow(x) {
+  const T = S.d.tariffs[x.tariff] || S.d.tariffs.start;
+  const lc = x.status === 'bloklangan' ? 'bad' : x.left < 0 ? 'bad' : x.left <= 3 ? 'warn' : 'ok';
+  const lt = x.status === 'bloklangan' ? 'bloklangan' : x.left < 0 ? 'tugagan' : x.left + ' kun';
+  return `<div class="it" style="align-items:flex-start" data-a="aShop" data-id="${x.id}"><div class="av">${esc(ini(x.shop))}</div>
+  <div class="mid"><b>${esc(x.shop)} <span class="pill ${TFC[x.tariff]}">${T.name}</span></b><span>ID ${x.id} · ${esc(x.owner)} · ${phoneF(x.phone)}</span>
+  <span style="margin-top:4px">${x.masters}/${T.max} usta · ${fd(x.paidUntil)} gacha <span class="pill ${lc}">${lt}</span></span></div>${I('chev', 18, '#8A94AB')}</div>`;
+}
+function aShops() {
+  const f = S.aF;
+  return `<input id="aq" placeholder="Nomi, ID yoki telefon" value="${esc(S.aQ)}" style="margin:0 0 10px">
+  <div class="chips sc">${[['all', 'Hammasi'], ['active', 'Faol'], ['exp', 'Tugagan'], ['start', 'Start'], ['standart', 'Standart'], ['biznes', 'Biznes']].map(x => `<button class="chip ${f === x[0] ? 'on' : ''}" data-a="aF" data-v="${x[0]}">${x[1]}</button>`).join('')}</div>
+  <div id="a-res" style="margin-top:12px"></div>`;
+}
+function drawShops() {
+  const q = S.aQ.toLowerCase().trim(), f = S.aF;
+  let L = S.A.shops;
+  if (f === 'active') L = L.filter(x => !x.expired); else if (f === 'exp') L = L.filter(x => x.expired); else if (f !== 'all') L = L.filter(x => x.tariff === f);
+  if (q) L = L.filter(x => x.shop.toLowerCase().includes(q) || String(x.id).includes(q) || (digits(q) && digits(x.phone).includes(digits(q))) || String(x.owner).toLowerCase().includes(q));
+  const box = $('#a-res'); if (!box) return;
+  box.innerHTML = L.length ? `<p class="hint" style="margin:0 0 8px">${L.length} ta</p><div class="list menu">${L.map(shopRow).join('')}</div>` : '<div class="empty">Topilmadi</div>';
+}
+function aShop(el) {
+  const x = S.A.shops.find(s => String(s.id) === el.dataset.id); if (!x) return;
+  const T = S.d.tariffs;
+  openSheet(`<h3>${esc(x.shop)}</h3>
+  <div class="card" style="font-size:14px;line-height:1.8">ID: <b>${x.id}</b><br>Egasi: <b>${esc(x.owner)}</b> · <a href="tel:${esc(x.phone)}">${phoneF(x.phone)}</a><br>Manzil: ${esc(x.address)}<br>Tarif: <b>${T[x.tariff].name}</b> · ${x.masters}/${T[x.tariff].max} usta<br>Muddat: <b>${fd(x.paidUntil)}</b> gacha · Ro‘yxatdan: ${esc(String(x.created).slice(0, 10))}</div>
+  <h2>To‘lov qabul qilish</h2>
+  <div class="lbl" style="margin-top:0">Tarif</div><div class="seg" id="g-tf">${Object.keys(T).map(k => `<button class="${k === x.tariff ? 'on' : ''}" data-a="pickAmt" data-g="g-tf" data-v="${k}">${T[k].name}</button>`).join('')}</div>
+  <div class="lbl">Necha oy</div><div class="chips" id="g-mo">${[1, 3, 6, 12].map((n, i) => `<button class="chip ${i ? '' : 'on'}" data-a="pickAmt" data-g="g-mo" data-v="${n}">${n} oy</button>`).join('')}</div>
+  <label>Summa (so‘m)<input id="ex-amt" type="number" value="${T[x.tariff].price}"></label>
+  <p class="err" id="ex-err"></p>
+  <button class="btn p w" style="margin-top:8px" data-a="aExtend" data-id="${x.id}">${I('money', 18)} To‘lovni tasdiqlash</button>
+  <div class="row2"><button class="btn g" data-a="aMsgOne" data-id="${x.id}">${I('send', 18)} Xabar</button>
+  <button class="btn ${x.status === 'bloklangan' ? 'ok' : 'no'}" data-a="aBlock" data-id="${x.id}" data-b="${x.status === 'bloklangan' ? '0' : '1'}">${x.status === 'bloklangan' ? 'Blokdan chiqarish' : 'Bloklash'}</button></div>`);
+}
+function pickAmt(el) {
+  A.pick(el);
+  const T = S.d.tariffs, k = picked('g-tf'), n = +picked('g-mo');
+  if (k && n && $('#ex-amt')) $('#ex-amt').value = T[k].price * n;
+}
+async function aExtend(el) {
+  const tariff = picked('g-tf'), months = +picked('g-mo'), amount = +val('ex-amt');
+  if (!(amount > 0)) return fail({ msg: 'Summani yozing' }, 'ex-err');
+  if (!(await confirmBox(`${S.d.tariffs[tariff].name} · ${months} oy · ${som(amount)} — tasdiqlaysizmi?`))) return;
+  el.disabled = true;
+  try { S.A = await api('a_extend', { shopId: el.dataset.id, tariff, months, amount }); S.hist = null; closeSheet(); haptic('success'); toast('To‘lov qabul qilindi, egasiga xabar ketdi'); renderATab(); }
+  catch (e) { el.disabled = false; fail(e, 'ex-err'); }
+}
+async function aBlock(el) {
+  const b = el.dataset.b === '1';
+  if (!(await confirmBox(b ? 'Sartaroshxona bloklansinmi? Ustalar va mijozlar foydalana olmaydi.' : 'Blokdan chiqarilsinmi?'))) return;
+  try { S.A = await api('a_block', { shopId: el.dataset.id, block: b }); closeSheet(); toast(b ? 'Bloklandi' : 'Ochildi'); renderATab(); } catch (e) { fail(e); }
+}
+function msgForm(one) {
+  return `<div class="lbl">Kimga</div>
+  ${one ? `<div class="card" style="font-weight:700">${esc(one.shop)} (ID ${one.id})</div>` : `<select id="am-target"><option value="all">Barcha sartaroshxonalar</option><option value="expiring">Muddati tugayotganlar (3 kun)</option><option value="start">Start tarifidagilar</option><option value="standart">Standart tarifidagilar</option><option value="biznes">Biznes tarifidagilar</option></select>`}
+  <div class="seg" id="g-who" style="margin-top:10px"><button class="on" data-a="pick" data-g="g-who" data-v="egasi">Faqat egalariga</button><button data-a="pick" data-g="g-who" data-v="all">Barcha ustalarga</button></div>
+  <div class="lbl">Qanday</div><div class="seg" id="g-ach"><button class="on" data-a="pick" data-g="g-ach" data-v="tg">Telegram</button><button data-a="pick" data-g="g-ach" data-v="sms">SMS</button><button data-a="pick" data-g="g-ach" data-v="both">Ikkalasi</button></div>
+  <p class="hint">SMS sizning platforma Eskiz hisobingizdan ketadi (Sozlama bo‘limida).</p>
+  <label>Xabar matni<textarea id="am-text" placeholder="Masalan: Yangi imkoniyat qo‘shildi — ..."></textarea></label>
+  <p class="err" id="am-err"></p>
+  <button class="btn p w" style="margin-top:8px" data-a="aSend" data-id="${one ? one.id : ''}">${I('send', 18)} Yuborish</button>`;
+}
+function aMsg() {
+  const H2 = (S.hist && S.hist.msgs) || [];
+  return `<h3>Ustalarga xabar</h3><div class="card">${msgForm()}</div>
+  <h2>Yuborilgan xabarlar <small>${H2.length} ta</small></h2>
+  ${H2.length ? `<div class="list">${H2.map(h => `<div class="it"><div class="mid"><b>${esc(String(h.text).slice(0, 60))}</b><span>${esc(h.date)} · ${esc(h.by)} · ${esc(h.target)} · TG ${h.tg} · SMS ${h.sms}</span></div></div>`).join('')}</div>` : '<div class="empty">Hali xabar yuborilmagan</div>'}`;
+}
+function aMsgOne(el) { const x = S.A.shops.find(s => String(s.id) === el.dataset.id); openSheet(`<h3>Xabar yuborish</h3>${msgForm(x)}`); }
+async function aSend(el) {
+  const text = val('am-text').trim();
+  if (text.length < 3) return fail({ msg: 'Xabar matnini yozing' }, 'am-err');
+  const one = el.dataset.id;
+  if (!(await confirmBox('Xabar yuborilsinmi?'))) return;
+  el.disabled = true; el.textContent = 'Yuborilmoqda…';
+  try {
+    const r = await api('a_msg', { text, channel: picked('g-ach'), who: picked('g-who'), target: one ? 'one' : val('am-target'), shopId: one });
+    haptic('success'); closeSheet(); S.hist = null;
+    toast(`Yuborildi: ${r.people} kishi · TG ${r.tg} · SMS ${r.sms}${r.fail ? ' · xato ' + r.fail : ''}`);
+    if (S.aTab === 'msg') renderATab();
+  } catch (e) { el.disabled = false; el.textContent = 'Yuborish'; fail(e, 'am-err'); }
+}
+function aSet() {
+  const A2 = S.admins, sup = S.d.super, pays = (S.hist && S.hist.pays) || [];
+  return `<h3>Adminlar</h3>
+  <div class="list"><div class="it"><div class="av" style="background:var(--n);color:#fff">${I('shield', 18)}</div><div class="mid"><b>Asosiy admin</b><span>Script Properties’dagi ADMIN_ID</span></div></div>
+  ${A2.admins.map(a => `<div class="it"><div class="av">${esc(ini(a.name))}</div><div class="mid"><b>${esc(a.name || a.tgId)}</b><span>ID ${esc(a.tgId)} · ${esc(String(a.added).slice(0, 10))}</span></div>${sup ? `<button class="ic" data-a="aAdmRm" data-id="${esc(a.tgId)}" aria-label="O‘chirish">${I('trash', 18)}</button>` : ''}</div>`).join('')}</div>
+  ${sup ? `<button class="btn p w" style="margin-top:12px" data-a="aAdmInv">${I('plus', 20)} Admin (sherik) qo‘shish</button><p class="hint" style="text-align:center">Adminlar hamma narsani ko‘radi va boshqaradi, faqat admin qo‘sha olmaydi.</p>` : ''}
+  ${sup ? `<h2>Platforma SMS (Eskiz)</h2><div class="card"><p class="hint" style="margin-top:0">Ustalarga SMS shu hisobdan ketadi.</p>
+    <label>Eskiz email<input id="ps-email" value="${esc(A2.sms.email)}"></label>
+    <label>Parol <small>${A2.sms.hasPass ? '(saqlangan)' : ''}</small><input id="ps-pass" type="password" placeholder="${A2.sms.hasPass ? '••••••••' : 'Parol'}"></label>
+    <label>Jo‘natuvchi<input id="ps-from" value="${esc(A2.sms.from)}"></label>
+    <p class="err" id="ps-err"></p><button class="btn p w" style="margin-top:8px" data-a="aSmsSave">Saqlash</button></div>` : ''}
+  <h2>To‘lovlar tarixi <small>${pays.length} ta</small></h2>
+  ${pays.length ? `<div class="list">${pays.map(p => `<div class="it"><div class="mid"><b>${esc(p.shop)} · ${esc((S.d.tariffs[p.tariff] || {}).name || p.tariff)} · ${p.months} oy</b><span>${esc(p.date)} · ${esc(p.by)}</span></div><div class="end"><b>${fmt(p.amount)}</b></div></div>`).join('')}</div>` : '<div class="empty">Hali to‘lov yo‘q</div>'}`;
+}
+async function aAdmInv(el) {
+  el.disabled = true;
+  try {
+    const r = await api('a_admin_invite');
+    openSheet(`<h3>Admin taklifi</h3><p style="color:var(--m);margin:0 0 12px">Havolani sherigingizga yuboring. 48 soat amal qiladi, bir marta ishlatiladi.</p>
+    <div class="card" style="word-break:break-all;font-size:13px;font-weight:700">${esc(r.link)}</div>
+    <button class="btn p w" style="margin-top:12px" data-a="share" data-v="${esc(r.link)}" data-t="Ustam CRM admin paneliga qo‘shiling">${I('send', 18)} Telegram orqali yuborish</button>
+    <button class="btn g w" style="margin-top:8px" data-a="copy" data-v="${esc(r.link)}">Nusxalash</button>`);
+  } catch (e) { fail(e); }
+  el.disabled = false;
+}
+
+/* ================= HODISALAR ================= */
+const A = {
+  reload: () => location.reload(),
+  closeApp: () => tg.close(),
+  closeSheet,
+  contact: () => { try { tg.openTelegramLink('https://t.me/' + S.d.contact.replace('@', '')); } catch (e) { } },
+  mode: el => { S.mode = el.dataset.v; closeSheet(); render(); window.scrollTo(0, 0); },
+  refresh: async () => { try { S.d = await api('me'); S.clients = S.bookings = S.report = S.team = S.sms = null; render(); toast('Yangilandi'); } catch (e) { fail(e); } },
+  tab: el => { S.tab = el.dataset.t; S.sec = null; renderStaff(); window.scrollTo(0, 0); },
+  mf: async el => { S.mf = el.dataset.v; S.report = null; if (S.tab === 'bugun') S.dashStale = true; renderTab(); },
+  visitForm: () => visitForm(), visitSave, expForm, expSave,
+  expName: el => { $('#x-name').value = el.dataset.v; $('#x-sum').focus(); },
+  pick: el => { document.querySelectorAll('#' + el.dataset.g + ' .on').forEach(b => b.classList.remove('on')); el.classList.add('on'); },
+  pickAmt,
+  del: async el => {
+    if (!(await confirmBox('O‘chirilsinmi?'))) return;
+    try { S.d.dash = await api('u_del', Object.assign({ id: el.dataset.id, kind: el.dataset.kind }, mfArg())); S.report = null; S.clients = null; toast('O‘chirildi'); renderTab(); } catch (e) { fail(e); }
+  },
+  bf: el => { S.bf = el.dataset.v; renderTab(); },
+  bkSet, came, clientForm, clientSave,
+  per: el => { S.period = el.dataset.v; S.report = null; renderTab(); },
+  debtPay, saveSet, posterPdf,
+  sec: el => { S.sec = el.dataset.v; renderTab(); window.scrollTo(0, 0); },
+  secBack: () => { S.sec = null; renderTab(); },
+  tariffs: tariffsSheet,
+  invite,
+  staffRm: async el => {
+    if (!(await confirmBox(el.dataset.n + ' jamoadan chiqarilsinmi?'))) return;
+    try { S.team = await api('o_staff_remove', { tgId: el.dataset.id }); S.d = await api('me', {}, true); toast('Chiqarildi'); renderStaff(); } catch (e) { fail(e); }
+  },
+  works: async el => {
+    try { S.team = await api('o_works', { works: !S.d.staff.works }); S.d = await api('me', {}, true); toast(S.d.staff.works ? 'Siz ham usta sifatida ko‘rinasiz' : 'Mijozlar sizni tanlay olmaydi'); renderStaff(); } catch (e) { fail(e); }
+  },
+  smsOn: el => { const k = el.dataset.k; S.sms.cfg.on[k] = !S.sms.cfg.on[k]; el.classList.toggle('on', S.sms.cfg.on[k]); },
+  smsSave,
+  smsTest: async el => {
+    const ph = val('sm-test');
+    if (digits(ph).length < 9) return toast('Raqamni yozing', true);
+    el.disabled = true;
+    try { await api('o_sms_test', { phone: ph }); toast('Sinov SMS yuborildi'); S.sms = null; renderTab(); } catch (e) { fail(e); }
+    el.disabled = false;
+  },
+  massSend,
+  share: el => { const u = 'https://t.me/share/url?url=' + encodeURIComponent(el.dataset.v) + '&text=' + encodeURIComponent(el.dataset.t || ''); try { tg.openTelegramLink(u); } catch (e) { window.open(u); } },
+  copy: el => { const v = el.dataset.v; (navigator.clipboard ? navigator.clipboard.writeText(v) : Promise.reject()).then(() => toast('Nusxalandi'), () => toast(v)); },
+  cMaster: el => { S.cMaster = el.dataset.v; document.querySelectorAll('[data-a=cMaster]').forEach(b => b.classList.toggle('on', b === el)); loadSlots(); },
+  cDay: el => { S.cDate = el.dataset.v; document.querySelectorAll('.day').forEach(b => b.classList.toggle('on', b === el)); loadSlots(); },
+  cPick: el => { S.pick = el.dataset.v; drawSlots(); drawBar(); try { tg.HapticFeedback.selectionChanged(); } catch (e) { } },
+  cBook, cCancel,
+  aTab: el => { S.aTab = el.dataset.t; renderAdmin(); window.scrollTo(0, 0); },
+  aRefresh: async () => { S.A = S.hist = S.admins = null; renderATab(); },
+  aF: el => { S.aF = el.dataset.v; document.querySelectorAll('[data-a=aF]').forEach(b => b.classList.toggle('on', b === el)); drawShops(); },
+  aShop, aExtend, aBlock, aMsgOne, aSend, aAdmInv,
+  aAdmRm: async el => { if (!(await confirmBox('Admin o‘chirilsinmi?'))) return; try { const r = await api('a_admin_remove', { tgId: el.dataset.id }); S.admins.admins = r.admins; renderATab(); } catch (e) { fail(e); } },
+  aSmsSave: async el => {
+    el.disabled = true;
+    try { await api('a_sms_save', { email: val('ps-email').trim(), pass: val('ps-pass'), from: val('ps-from').trim() }); toast('Saqlandi'); S.admins = null; renderATab(); } catch (e) { el.disabled = false; fail(e, 'ps-err'); }
+  }
+};
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-a]');
+  if (!el || el.disabled) return;
+  const f = A[el.dataset.a];
+  if (f) { e.preventDefault(); f(el); }
+});
+document.addEventListener('input', e => {
+  if (e.target.id === 'q') { S.q = e.target.value; drawClients(); }
+  if (e.target.id === 'aq') { S.aQ = e.target.value; drawShops(); }
+});
+boot();
+</script>
+</body>
+</html>
