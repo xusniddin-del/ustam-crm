@@ -528,13 +528,15 @@ function renderBosh(m) {
   if (sec === 'sms') return secSms(m);
   if (sec === 'mass') { m.innerHTML = secMass(); return; }
   if (sec === 'info') { m.innerHTML = secInfo(); return; }
+  if (sec === 'buy') return secBuy(m);
   const left = Math.round((new Date(s.paidUntil + 'T00:00:00Z') - new Date(S.d.today + 'T00:00:00Z')) / 864e5);
   const item = (k, ic, t, sub, lock) => `<div class="it" data-a="sec" data-v="${k}"><div class="av">${I(ic, 20)}</div><div class="mid"><b>${t}${lock ? ` <span class="pill pro">${lock}</span>` : ''}</b><span>${sub}</span></div>${I('chev', 18, '#8A94AB')}</div>`;
   m.innerHTML = `
-  <section class="hero"><div class="hero-l">Tarif · ${fd(s.paidUntil)} gacha · ${left > 0 ? left + ' kun qoldi' : 'bugun tugaydi'}</div>
-  <div class="hero-v" style="font-size:24px">${s.tariffName} — ${som(s.tariffPrice)}<span style="font-size:13px;color:#A9C2F5"> /oy</span></div>
+  ${s.sold ? `<section class="hero"><div class="hero-l">Dastur sizniki · umrbod litsenziya</div>
+  <div class="hero-v" style="font-size:24px">${s.tariffName} imkoniyatlari</div>` : `<section class="hero"><div class="hero-l">Tarif · ${fd(s.paidUntil)} gacha · ${left > 0 ? left + ' kun qoldi' : 'bugun tugaydi'}</div>
+  <div class="hero-v" style="font-size:24px">${s.tariffName} — ${som(s.tariffPrice)}<span style="font-size:13px;color:#A9C2F5"> /oy</span></div>`}
   <div class="hero-row"><div><span>Ustalar</span><b>${(s.masters || []).length} / ${s.max}</b></div><div><span>SMS</span><b>${s.sms ? 'Bor' : 'Yo‘q'}</b></div><div><span>Rahbar paneli</span><b>${s.panel ? 'Bor' : 'Yo‘q'}</b></div></div></section>
-  ${s.tariff !== 'biznes' ? `<button class="btn g w" style="margin-top:12px" data-a="tariffs">${I('crown', 18)} Tarifni oshirish</button>` : ''}
+  ${!s.sold && s.tariff !== 'biznes' ? `<button class="btn g w" style="margin-top:12px" data-a="tariffs">${I('crown', 18)} Tarifni oshirish</button>` : ''}
   <h2>Boshqaruv</h2>
   <div class="list menu">
   ${item('jamoa', 'users', 'Jamoa', 'Ustalarni qo‘shish va chiqarish')}
@@ -542,7 +544,50 @@ function renderBosh(m) {
   ${item('sms', 'sms', 'SMS xizmati', 'Bron, eslatma, qaytarish SMS', s.sms ? '' : 'Standart')}
   ${item('mass', 'mega', 'Ommaviy xabar', 'Mijozlarga Telegram' + (s.sms ? ' va SMS' : ''))}
   ${item('info', 'shop', 'Sartaroshxona ma’lumotlari', 'Nomi, manzil, narx, ish vaqti')}
+  ${s.sold ? '' : item('buy', 'crown', 'Dasturni to‘liq sotib olish', 'Bir marta to‘lang — oylik to‘lovsiz, umrbod')}
   </div>`;
+}
+
+/* --- Dasturni to'liq sotib olish --- */
+async function secBuy(m) {
+  const back = `<button class="btn g s" data-a="secBack" style="margin-bottom:12px">← Orqaga</button>`;
+  if (!S.buy) { m.innerHTML = back + loader(); try { S.buy = await api('o_buy_info', {}, true); } catch (e) { return fail(e); } }
+  const B = S.buy, T = B.tariffs;
+  if (!S.buyT) S.buyT = B.current;
+  const feat = { start: '1–2 usta, kassa, mijozlar, bron, QR poster', standart: '4 tagacha usta + SMS xizmati', biznes: '8 tagacha usta + SMS + rahbar paneli' };
+  const yes = (t, sub) => `<div class="it"><div class="av" style="background:var(--okbg);color:var(--ok)">${I('check', 18)}</div><div class="mid"><b>${t}</b><span>${sub}</span></div></div>`;
+  const no = (t, sub) => `<div class="it"><div class="av" style="background:var(--warnbg);color:var(--warn)">${I('debt', 18)}</div><div class="mid"><b>${t}</b><span>${sub}</span></div></div>`;
+  m.innerHTML = back + `<h3>Dasturni to‘liq sotib olish</h3>
+  <p style="color:var(--m);margin:-6px 0 14px">Bir marta to‘laysiz — dastur sizniki bo‘ladi, har oy to‘lov qilib yurmaysiz.</p>
+  <div class="lbl" style="margin-top:0">Qaysi imkoniyatlar bilan</div>
+  <div class="seg">${Object.keys(B.prices).map(k => `<button class="${S.buyT === k ? 'on' : ''}" data-a="buyT" data-v="${k}">${T[k].name}</button>`).join('')}</div>
+  <section class="hero" style="margin-top:12px"><div class="hero-l">${T[S.buyT].name} · ${feat[S.buyT]}</div>
+  <div class="hero-v">${som(B.prices[S.buyT])}</div>
+  <div class="hero-row"><div><span>Bir martalik</span><b>Umrbod</b></div><div><span>Oylik obuna bilan</span><b>${som(T[S.buyT].price)}/oy</b></div></div></section>
+  <h2>Nimalar sizniki bo‘ladi</h2>
+  <div class="list">
+  ${yes('Ustam CRM ilovasi — o‘zingizniki', 'Kassa, mijozlar, bron, hisobot, QR poster')}
+  ${yes('SMS dasturi — o‘zingizniki', S.buyT === 'start' ? 'Start’da SMS yo‘q — Standart yoki Biznesni tanlang' : 'Mijozlarga SMS o‘z telefoningiz SIM’idan')}
+  ${yes('Barcha imkoniyatlar', feat[S.buyT])}
+  ${yes('Oylik to‘lov yo‘q', 'Bir marta to‘laysiz, obuna hech qachon tugamaydi')}
+  ${yes('3 oy bepul texnik yordam', 'Savol va muammolar bo‘yicha')}
+  </div>
+  <h2>Shartlar</h2>
+  <div class="list">
+  ${no('Ma’lumotlar Ustam CRM serverida saqlanadi', 'Mijozlar, kassa va bronlar bizning serverimizda turadi. Busiz dastur ishlamaydi.')}
+  ${no('Yangilanishlar kelmaydi', 'Sotib olgan kuningizdagi versiya qoladi. Yangi imkoniyat va dizaynlar oylik obunachilarga chiqadi.')}
+  </div>
+  ${B.pending ? `<div class="notice" style="margin-top:14px">So‘rovingiz yuborilgan. Administrator siz bilan bog‘lanadi.</div>` : ''}
+  <p class="err" id="buy-err"></p>
+  <button class="btn p w" style="margin-top:12px" data-a="buyReq">${I('crown', 18)} Sotib olish so‘rovini yuborish</button>
+  ${B.contact ? (B.contact.startsWith('@') ? `<button class="btn g w" style="margin-top:8px" data-a="contact">${I('send', 18)} ${esc(B.contact)} ga yozish</button>` : `<a class="btn g w" style="margin-top:8px" href="tel:${esc(B.contact)}">${I('phone', 18)} ${esc(B.contact)}</a>`) : ''}
+  <p class="hint" style="text-align:center">To‘lovdan keyin administrator dasturni sizning nomingizga o‘tkazadi va botga xabar keladi.</p>`;
+}
+async function buyReq(el) {
+  if (!(await confirmBox(`${S.buy.tariffs[S.buyT].name} — ${som(S.buy.prices[S.buyT])}. So‘rov yuborilsinmi?`))) return;
+  el.disabled = true;
+  try { await api('o_buy_request', { tariff: S.buyT }); S.buy = null; haptic('success'); toast('So‘rov yuborildi — administrator bog‘lanadi'); renderTab(); }
+  catch (e) { el.disabled = false; fail(e, 'buy-err'); }
 }
 function tariffsSheet() {
   const T = S.d.tariffs, cur = S.d.shop.tariff, c = S.d.contact || '';
@@ -877,8 +922,11 @@ function aStat() {
   const st = S.A.stats, T = S.d.tariffs;
   const soon = S.A.shops.filter(x => x.left <= 3 && x.status !== 'bloklangan').slice(0, 8);
   const mx = Math.max(1, ...st.byTariff.map(x => x.n));
+  const R = S.A.requests || [];
   return `<section class="hero"><div class="hero-l">Oylik takroriy daromad (MRR)</div><div class="hero-v">${som(st.mrr)}</div>
-  <div class="hero-row"><div><span>Shu oy to‘landi</span><b>${som(st.paidMonth)}</b></div><div><span>Faol</span><b>${st.active} / ${st.shops}</b></div></div></section>
+  <div class="hero-row"><div><span>Shu oy to‘landi</span><b>${som(st.paidMonth)}</b></div><div><span>Oylik faol</span><b>${st.active} / ${st.shops}</b></div></div></section>
+  <div class="card" style="margin-top:12px;display:flex;align-items:center;gap:12px" data-a="aF2" data-v="sold"><div class="av" style="background:var(--probg);color:var(--pro)">${I('crown', 20)}</div><div style="flex:1"><b>Sotilgan dasturlar: ${st.sold} ta</b><div class="hint" style="margin:0">Jami: ${som(st.soldSum)}</div></div>${I('chev', 18, '#8A94AB')}</div>
+  ${R.length ? `<h2>Sotib olish so‘rovlari <small>${R.length} ta</small></h2><div class="list menu">${R.map(r => `<div class="it" data-a="aShop" data-id="${esc(r.shopId)}"><div class="av" style="background:var(--warnbg);color:var(--warn)">${I('crown', 18)}</div><div class="mid"><b>${esc(r.shop)} · ${esc((S.d.tariffs[r.tariff] || {}).name || r.tariff)}</b><span>${esc(r.by)} · ${esc(r.date)}</span></div><div class="end"><b>${fmt(r.price)}</b></div></div>`).join('')}</div>` : ''}
   <div class="grid">${met('shop', 'Sartaroshxonalar', st.shops + ' ta')}${met('ban', 'Muddati tugagan', st.expired + ' ta')}${met('sc', 'Ustalar', st.masters + ' ta')}${met('users', 'Mijozlar (botda)', st.clients + ' ta')}</div>
   <h2>Tariflar bo‘yicha <small>faollar</small></h2><div class="card">${st.byTariff.map(x => `<div style="margin:6px 0 12px"><div style="display:flex;justify-content:space-between;font-weight:700;font-size:14px"><span>${T[x.k].name} · ${som(T[x.k].price)}</span><span>${x.n} ta</span></div><div class="bar1"><i style="width:${x.n / mx * 100}%"></i></div></div>`).join('')}</div>
   <h2>Muddati tugayotganlar <small>3 kun ichida</small></h2>
@@ -886,22 +934,22 @@ function aStat() {
 }
 function shopRow(x) {
   const T = S.d.tariffs[x.tariff] || S.d.tariffs.start;
-  const lc = x.status === 'bloklangan' ? 'bad' : x.left < 0 ? 'bad' : x.left <= 3 ? 'warn' : 'ok';
-  const lt = x.status === 'bloklangan' ? 'bloklangan' : x.left < 0 ? 'tugagan' : x.left + ' kun';
+  const lc = x.status === 'bloklangan' ? 'bad' : x.sold ? 'pro' : x.left < 0 ? 'bad' : x.left <= 3 ? 'warn' : 'ok';
+  const lt = x.status === 'bloklangan' ? 'bloklangan' : x.sold ? 'sotilgan' : x.left < 0 ? 'tugagan' : x.left + ' kun';
   return `<div class="it" style="align-items:flex-start" data-a="aShop" data-id="${x.id}"><div class="av">${esc(ini(x.shop))}</div>
   <div class="mid"><b>${esc(x.shop)} <span class="pill ${TFC[x.tariff]}">${T.name}</span></b><span>ID ${x.id} · ${esc(x.owner)} · ${phoneF(x.phone)}</span>
-  <span style="margin-top:4px">${x.masters}/${T.max} usta · ${fd(x.paidUntil)} gacha <span class="pill ${lc}">${lt}</span></span></div>${I('chev', 18, '#8A94AB')}</div>`;
+  <span style="margin-top:4px">${x.masters}/${T.max} usta · ${x.sold ? 'umrbod · ' + fmt(x.soldPrice) + ' so‘m' : fd(x.paidUntil) + ' gacha'} <span class="pill ${lc}">${lt}</span></span></div>${I('chev', 18, '#8A94AB')}</div>`;
 }
 function aShops() {
   const f = S.aF;
   return `<input id="aq" placeholder="Nomi, ID yoki telefon" value="${esc(S.aQ)}" style="margin:0 0 10px">
-  <div class="chips sc">${[['all', 'Hammasi'], ['active', 'Faol'], ['exp', 'Tugagan'], ['start', 'Start'], ['standart', 'Standart'], ['biznes', 'Biznes']].map(x => `<button class="chip ${f === x[0] ? 'on' : ''}" data-a="aF" data-v="${x[0]}">${x[1]}</button>`).join('')}</div>
+  <div class="chips sc">${[['all', 'Hammasi'], ['active', 'Oylik faol'], ['exp', 'Tugagan'], ['sold', 'Sotilgan dasturlar'], ['start', 'Start'], ['standart', 'Standart'], ['biznes', 'Biznes']].map(x => `<button class="chip ${f === x[0] ? 'on' : ''}" data-a="aF" data-v="${x[0]}">${x[1]}</button>`).join('')}</div>
   <div id="a-res" style="margin-top:12px"></div>`;
 }
 function drawShops() {
   const q = S.aQ.toLowerCase().trim(), f = S.aF;
   let L = S.A.shops;
-  if (f === 'active') L = L.filter(x => !x.expired); else if (f === 'exp') L = L.filter(x => x.expired); else if (f !== 'all') L = L.filter(x => x.tariff === f);
+  if (f === 'active') L = L.filter(x => !x.expired && !x.sold); else if (f === 'exp') L = L.filter(x => x.expired); else if (f === 'sold') L = L.filter(x => x.sold); else if (f !== 'all') L = L.filter(x => !x.sold && x.tariff === f);
   if (q) L = L.filter(x => x.shop.toLowerCase().includes(q) || String(x.id).includes(q) || (digits(q) && digits(x.phone).includes(digits(q))) || String(x.owner).toLowerCase().includes(q));
   const box = $('#a-res'); if (!box) return;
   box.innerHTML = L.length ? `<p class="hint" style="margin:0 0 8px">${L.length} ta</p><div class="list menu">${L.map(shopRow).join('')}</div>` : '<div class="empty">Topilmadi</div>';
@@ -910,15 +958,31 @@ function aShop(el) {
   const x = S.A.shops.find(s => String(s.id) === el.dataset.id); if (!x) return;
   const T = S.d.tariffs;
   openSheet(`<h3>${esc(x.shop)}</h3>
-  <div class="card" style="font-size:14px;line-height:1.8">ID: <b>${x.id}</b><br>Egasi: <b>${esc(x.owner)}</b> · <a href="tel:${esc(x.phone)}">${phoneF(x.phone)}</a><br>Manzil: ${esc(x.address)}<br>Tarif: <b>${T[x.tariff].name}</b> · ${x.masters}/${T[x.tariff].max} usta<br>Muddat: <b>${fd(x.paidUntil)}</b> gacha · Ro‘yxatdan: ${esc(String(x.created).slice(0, 10))}</div>
+  <div class="card" style="font-size:14px;line-height:1.8">ID: <b>${x.id}</b><br>Egasi: <b>${esc(x.owner)}</b> · <a href="tel:${esc(x.phone)}">${phoneF(x.phone)}</a><br>Manzil: ${esc(x.address)}<br>Tarif: <b>${T[x.tariff].name}</b> · ${x.masters}/${T[x.tariff].max} usta<br>${x.sold ? `Holati: <b>Sotilgan (umrbod)</b> · ${esc(String(x.soldAt).slice(0, 10))} · ${som(x.soldPrice)}` : `Muddat: <b>${fd(x.paidUntil)}</b> gacha`} · Ro‘yxatdan: ${esc(String(x.created).slice(0, 10))}</div>
+  ${x.sold ? `${S.d.super ? `<button class="btn g w" style="margin-top:12px" data-a="aUnsell" data-id="${x.id}">Sotuvni bekor qilish (oylikka qaytarish)</button>` : ''}` : `
   <h2>To‘lov qabul qilish</h2>
   <div class="lbl" style="margin-top:0">Tarif</div><div class="seg" id="g-tf">${Object.keys(T).map(k => `<button class="${k === x.tariff ? 'on' : ''}" data-a="pickAmt" data-g="g-tf" data-v="${k}">${T[k].name}</button>`).join('')}</div>
   <div class="lbl">Necha oy</div><div class="chips" id="g-mo">${[1, 3, 6, 12].map((n, i) => `<button class="chip ${i ? '' : 'on'}" data-a="pickAmt" data-g="g-mo" data-v="${n}">${n} oy</button>`).join('')}</div>
   <label>Summa (so‘m)<input id="ex-amt" type="number" value="${T[x.tariff].price}"></label>
   <p class="err" id="ex-err"></p>
   <button class="btn p w" style="margin-top:8px" data-a="aExtend" data-id="${x.id}">${I('money', 18)} To‘lovni tasdiqlash</button>
+  <h2>Butunlay sotish <small>umrbod</small></h2>
+  <div class="seg" id="g-sl">${Object.keys(S.A.prices).map(k => `<button class="${k === x.tariff ? 'on' : ''}" data-a="pickSell" data-g="g-sl" data-v="${k}">${T[k].name}</button>`).join('')}</div>
+  <label>Narx (so‘m)<input id="sl-amt" type="number" value="${S.A.prices[x.tariff] || ''}"></label>
+  <p class="err" id="sl-err"></p>
+  <button class="btn g w" style="margin-top:8px" data-a="aSell" data-id="${x.id}">${I('crown', 18)} To‘landi — dasturni sotish</button>
+  <p class="hint">Oylik to‘lovchilar ro‘yxatidan chiqadi, obunasi tugamaydi, yangilanishlar unga kelmaydi.</p>`}
   <div class="row2"><button class="btn g" data-a="aMsgOne" data-id="${x.id}">${I('send', 18)} Xabar</button>
   <button class="btn ${x.status === 'bloklangan' ? 'ok' : 'no'}" data-a="aBlock" data-id="${x.id}" data-b="${x.status === 'bloklangan' ? '0' : '1'}">${x.status === 'bloklangan' ? 'Blokdan chiqarish' : 'Bloklash'}</button></div>`);
+}
+function pickSell(el) { A.pick(el); const k = picked('g-sl'); if (k && $('#sl-amt')) $('#sl-amt').value = S.A.prices[k]; }
+async function aSell(el) {
+  const tariff = picked('g-sl'), price = +val('sl-amt');
+  if (!(price > 0)) return fail({ msg: 'Narxni yozing' }, 'sl-err');
+  if (!(await confirmBox(`Dastur butunlay sotilsinmi? ${S.d.tariffs[tariff].name} · ${som(price)}. Oylik to‘lovlar to‘xtaydi.`))) return;
+  el.disabled = true;
+  try { S.A = await api('a_sell', { shopId: el.dataset.id, tariff, price }); S.hist = null; closeSheet(); haptic('success'); toast('Sotildi — egasiga xabar ketdi'); renderATab(); }
+  catch (e) { el.disabled = false; fail(e, 'sl-err'); }
 }
 function pickAmt(el) {
   A.pick(el);
@@ -940,7 +1004,7 @@ async function aBlock(el) {
 }
 function msgForm(one) {
   return `<div class="lbl">Kimga</div>
-  ${one ? `<div class="card" style="font-weight:700">${esc(one.shop)} (ID ${one.id})</div>` : `<select id="am-target"><option value="all">Barcha sartaroshxonalar</option><option value="expiring">Muddati tugayotganlar (3 kun)</option><option value="start">Start tarifidagilar</option><option value="standart">Standart tarifidagilar</option><option value="biznes">Biznes tarifidagilar</option></select>`}
+  ${one ? `<div class="card" style="font-weight:700">${esc(one.shop)} (ID ${one.id})</div>` : `<select id="am-target"><option value="all">Barcha sartaroshxonalar</option><option value="expiring">Muddati tugayotganlar (3 kun)</option><option value="start">Start tarifidagilar</option><option value="standart">Standart tarifidagilar</option><option value="biznes">Biznes tarifidagilar</option><option value="monthly">Oylik to‘lovchilar</option><option value="sold">Sotilgan dasturlar</option></select>`}
   <div class="seg" id="g-who" style="margin-top:10px"><button class="on" data-a="pick" data-g="g-who" data-v="egasi">Faqat egalariga</button><button data-a="pick" data-g="g-who" data-v="all">Barcha ustalarga</button></div>
   <div class="lbl">Qanday</div><div class="seg" id="g-ach"><button class="on" data-a="pick" data-g="g-ach" data-v="tg">Telegram</button><button data-a="pick" data-g="g-ach" data-v="sms">SMS</button><button data-a="pick" data-g="g-ach" data-v="both">Ikkalasi</button></div>
   <p class="hint">SMS sizning admin telefoningiz SIM kartasidan ketadi (Sozlama → SMS telefon).</p>
@@ -1000,7 +1064,7 @@ const A = {
   closeSheet,
   contact: () => { try { tg.openTelegramLink('https://t.me/' + S.d.contact.replace('@', '')); } catch (e) { } },
   mode: el => { S.mode = el.dataset.v; closeSheet(); render(); window.scrollTo(0, 0); },
-  refresh: async () => { try { S.d = await api('me'); S.clients = S.bookings = S.report = S.team = S.sms = null; render(); toast('Yangilandi'); } catch (e) { fail(e); } },
+  refresh: async () => { try { S.d = await api('me'); S.clients = S.bookings = S.report = S.team = S.sms = S.buy = null; render(); toast('Yangilandi'); } catch (e) { fail(e); } },
   tab: el => { S.tab = el.dataset.t; S.sec = null; renderStaff(); window.scrollTo(0, 0); },
   mf: async el => { S.mf = el.dataset.v; S.report = null; if (S.tab === 'bugun') S.dashStale = true; renderTab(); },
   visitForm: () => visitForm(), visitSave, expForm, expSave,
@@ -1048,6 +1112,10 @@ const A = {
   aShop, aExtend, aBlock, aMsgOne, aSend, aAdmInv,
   aAdmRm: async el => { if (!(await confirmBox('Admin o‘chirilsinmi?'))) return; try { const r = await api('a_admin_remove', { tgId: el.dataset.id }); S.admins.admins = r.admins; renderATab(); } catch (e) { fail(e); } },
   smsPair,
+  buyT: el => { S.buyT = el.dataset.v; renderTab(); },
+  buyReq, pickSell, aSell,
+  aF2: el => { S.aF = el.dataset.v; S.aTab = 'shops'; renderAdmin(); },
+  aUnsell: async el => { if (!(await confirmBox('Sotuv bekor qilinsinmi? Sartaroshxona yana oylik to‘lovga o‘tadi (7 kun muhlat).'))) return; try { S.A = await api('a_unsell', { shopId: el.dataset.id }); closeSheet(); toast('Bekor qilindi'); renderATab(); } catch (e) { fail(e); } },
   openApk: el => { try { tg.openLink(el.dataset.v); } catch (e) { window.open(el.dataset.v); } },
   smsUnpair: async el => {
     if (!(await confirmBox('Bu telefon uzilsinmi? U endi SMS yubormaydi.'))) return;
